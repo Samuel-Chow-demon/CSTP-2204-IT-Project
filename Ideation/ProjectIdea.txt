@@ -1,0 +1,131 @@
+
+/*--------------------------------- CSTP 2204 - IT Project Ideation ----------------------------------*/
+
+Product 	 : Real-time parking space detection, statistic and API
+
+Product Name : ParkSync, ESeePark, ParkSaveTime, ParkStat .... (Temporary)
+
+Background :
+
+	* Finding public parking space constantly is a challenge for drivers, especially at the high-demand or popular area like commerical center, arena or community-oriented areas. People often need to drive to the parking area before realizing whether there are any vanact space available. This inconvenience inspires the idea of a web application that provides real-time parking space detection and statistical services.
+
+Group Member :
+
+	* Tsz Chun Chow, Samuel
+	* Phucthien Bao Nguyen, Peter
+	* Alexander Regis, Alex
+	* Frack Wang, Frack
+	* Diya Sharma, Diya
+
+/*---------------------------------------------------------*/
+
+Application Overviews:
+
+	* Provide real-time parking vacancy statistic on different location (public parking area)
+		^ Through APP UI Dashboard
+		^ Through API request by third-party application
+		
+Target Audience : 
+
+	* Public user, Car Parking Commerical, Third-Party Application
+
+/*---------------------------------------------------------*/
+
+Components : 
+
+	* Backend - Car Parking Image Detection : 
+		- Platform : Python
+		- Framework : OpenCV, YOLO (Ultralytics)
+		- Dataset : 
+			^ RoboFlow Platform Dataset
+			^ Practical Image / Video data captured from various public parking area in Vancouver
+		
+	* Backend - API support for parking statistic data request
+		- Platform : Python
+		- Framework : fastapi, jwt etc.
+		- Database : Firebase
+			^ Storing generated API key related to the account
+
+	* Frontend - Parking Stat. Dashboard (Mobile, Desktop)
+		- Platform : Javascript, React
+		- Database : Firebase
+			^ Storing Account Info
+
+/*---------------------------------------------------------*/
+
+Project Management and Communication :
+
+	* Trello WorkSpace
+	* One Drive
+	* Figma
+	* Discord Server Channel
+
+Technologies :
+
+	* Object Detection by YOLO :
+	
+		^ YOLO (You Only Look Once) model is a type of CNN (Convolutional Neural Network) architecture designed 	
+		  specifically for real-time object detection
+		  
+		^ YOLO is built on a Convolutional Neural Network backbone. The CNN layers extract spatial features from the  
+		  image, such as edges, shapes, and textures, and use them to detect and classify objects.
+		  
+		  Key components:
+
+			1. Convolutional Layers:
+
+				These layers extract features like object boundaries, textures, and patterns.
+				YOLO uses a backbone network (e.g., Darknet, CSPNet, or others) as the feature extractor.
+				
+			2. Feature Maps:
+
+				The convolutional layers output feature maps, which are grids representing the image's spatial information and depth (channels).
+				
+			3. Bounding Box Prediction:
+
+				The network divides the image into an 
+				S×S grid and predicts bounding boxes, class probabilities, and confidence scores for each grid cell.
+				
+	* Google Colab :
+	
+		^ Making use of google provided cloud GPU engine linux instance for YOLO model training
+		^ jupyter notebook platform
+
+	* FireStore (NoSQL Database)
+	
+	* API Key Serialization, Salting And Validation
+	
+	* Amazon Web Service (AWS) Deployment
+	
+	* Data Image Acquisition by Drone
+		^ Rules of operation: 	 https://tc.canada.ca/en/aviation/drone-safety/learn-rules-you-fly-your-drone/find-your-category-drone-operation
+
+
+
+
+/*---------------------------------------------------------*/
+
+	Backup Idea :
+/*---------------------------------------------------------*/
+
+Product : Hand Gesture Detection for sign language translation or electronics manuvaration
+
+Overviews:
+
+	* Building robust detection for hand gesture to translate A to Z alphabet and perform auto texting
+	
+	or
+	
+	* Building custom hand gesture for electronics control or automation
+	
+	
+Technologies:
+
+	* Google Media-pipe Hand Landmark AI model, Gesture Recognizer
+
+
+ 
+ 
+ 
+ 
+ /*--------------------------------------------- END ---------------------------------------------*/
