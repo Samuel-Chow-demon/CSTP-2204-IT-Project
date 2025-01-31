@@ -1,4 +1,4 @@
-# CSTP 2204 IT Project
+# CSTP 2204 IT Project Idea
 
 ## <span style="color: rgb(191, 219, 162);">Team 1
 ### Tsz Chun Chow, Samuel (Team Leader)
