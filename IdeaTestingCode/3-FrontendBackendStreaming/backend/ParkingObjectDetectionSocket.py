@@ -125,8 +125,8 @@ async def websocket_endpoint(websocket: WebSocket, accID: str):
         streaming_error_limit = 10
         streaming_error = 0
 
-        sampling_test_client = 20
-        test_client_count = 0
+        #sampling_test_client = 20
+        #test_client_count = 0
 
         #frame_num = 0
 
@@ -142,12 +142,31 @@ async def websocket_endpoint(websocket: WebSocket, accID: str):
                 # else:
                 #     test_client_count += 1
 
-                print(f"client state - {websocket.client_state}")
+
+                #print(f"client state - {websocket.client_state}")
+                # Check if Frontend request to close the socket
+                try:
+                    request_msg = await asyncio.wait_for(websocket.receive_text(), timeout=0.01) # timeout unit in sec, 0.01 = 10 ms
+
+                    match (request_msg):
+                        case "CLOSE":
+                            print("WebSocket Close Request by Frontend")
+                            break
+                        case _:
+                            pass
+
+                except asyncio.TimeoutError:
+                    pass #Normal, no request came in
+                except WebSocketDisconnect:
+                    print("WebSocket Disconnected by Frontend")
+                    break
+
 
                 if websocket.client_state != WebSocketState.CONNECTED:
                     print(f"WebSocket connection closed for accID: {accID}")
                     break 
 
+                # read the frame
                 ok, frame = cap.read()
                 
                 if not ok:
@@ -189,5 +208,5 @@ async def websocket_endpoint(websocket: WebSocket, accID: str):
 if __name__ == "__main__":
     import uvicorn
     print("start running")
-    #uvicorn.run("ParkingObjectDetectionSocket:app", host="0.0.0.0", port=8204, reload=True, log_level="debug")
+    #uvicorn.run("ParkingObjectDetectionSocket:app", host="0.0.0.0", port=8204, reload=True, log_level="debug") # can perform debug at the console
     uvicorn.run("ParkingObjectDetectionSocket:app", host="0.0.0.0", port=8204, reload=True)
