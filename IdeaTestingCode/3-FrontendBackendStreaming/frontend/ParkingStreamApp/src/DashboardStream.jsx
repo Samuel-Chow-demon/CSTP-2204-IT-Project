@@ -142,10 +142,15 @@ const DisplayStream = ({ accID, expTime }) => {
 
     const Stop = ()=>{
 
-        if (wsRef.current)
+        const ws = wsRef.current;
+
+        if (ws &&
+            ws.readyState == WebSocket.OPEN)
         {
-            console.log("front end stopped")
-            wsRef.current.close();
+            console.log("front end request stop");
+
+            ws.send("CLOSE"); // send to backend for close request
+            setTimeout(()=>ws.close(), 100); // after 100 ms call the frontend to close web socket
         }
     }
 
