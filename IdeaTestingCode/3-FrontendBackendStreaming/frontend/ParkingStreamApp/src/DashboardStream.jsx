@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 
-const DisplayStream = ({ accID, expTime }) => {
+const DisplayStream = ({ accID, locationID, expTime }) => {
 	
 	// should be stored in key file
 	const BACK_END_IP = "localhost" ; //"127.0.0.1";
@@ -93,7 +93,7 @@ const DisplayStream = ({ accID, expTime }) => {
 
             // Step 3: Connect WebSocket
             //const websocket = new WebSocket(`ws://${BACK_END_IP}:${BACK_END_PORT}/ws/${accID}/?token=${encodeURIComponent(token)}`);
-            const websocket = new WebSocket(`ws://${BACK_END_IP}:${BACK_END_PORT}/ws/${accID}/?token=${token}`);
+            const websocket = new WebSocket(`ws://${BACK_END_IP}:${BACK_END_PORT}/ws/${accID}/${locationID}/?token=${token}`);
             
             wsRef.current = websocket;
 
