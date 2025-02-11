@@ -1,6 +1,7 @@
 import cv2
 import cvzone
 from ultralytics import YOLO
+from parking_lot_count import ParkingLotCounter
 # import torch
 # import torch_directml
 import math
@@ -12,6 +13,7 @@ OCCUPIED_ID = 0
 EMPTY_ID = 1
 
 # Please modify your storage path when testing
+
 IMAGE_PATH = "1-Object_detect_YOLO/image/"
 VIDEO_PATH = "1-Object_detect_YOLO/video/"
 
@@ -78,7 +80,8 @@ model = YOLO("1-Object_detect_YOLO/YOLO_weight/" + YOLO_MODEL)
 # cv2.destroyAllWindows()
 
 def RunAndDetect(is_Stream = True):
-
+    #Create the object here to call function later  
+    counter = ParkingLotCounter()
     while True:
 
         img = any
@@ -93,6 +96,9 @@ def RunAndDetect(is_Stream = True):
         img = resized_img
 
         results = model(img, stream=is_Stream) #, device=device)
+        
+        json_output = counter.process_results(results)
+        print(json_output)
 
         for result in results:
 
@@ -111,11 +117,10 @@ def RunAndDetect(is_Stream = True):
                 width, height = x2 - x1, y2 - y1
 
                 #print(f"{int(class_id)} -  {model.names[int(class_id)]}")
-
+                
                 # (B, G, R)
                 color = (128, 0, 255) if int(class_id) == OCCUPIED_ID else (255, 0, 0)
-
-                cvzone.cornerRect(img, (x1, y1, width, height), 5, 2, colorR=color)
+                cvzone.cornerRect(img, (x1, y1, width, height), 5, 2, colorR=color)                
 
                 #cvzone.putTextRect(img, f'{model.names[int(class_id)]} - {confidence}', (max(0, x1), max(35, y1)), scale = 1, thickness = 1)
 
