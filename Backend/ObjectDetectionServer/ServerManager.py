@@ -5,7 +5,7 @@ import time
 
 from ParkingObjectDetectionServer import ParkingObjDetection
 
-from DefineAndResources import BACK_END_PORT, BACK_END_IP
+from utilities.DefineAndResources import BACK_END_PORT, BACK_END_IP
 
 class ServerManager:
     def __init__(self, host: str, port: int):

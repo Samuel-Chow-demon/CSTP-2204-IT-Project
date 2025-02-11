@@ -8,7 +8,9 @@ from fastapi.testclient import TestClient
 from fastapi.responses import JSONResponse
 from fastapi.websockets import WebSocketState
 
-from DefineAndResources import dictLocationIDToStream, \
+from utilities.ParkingObjDetection import ParkingObjectDetection
+
+from utilities.DefineAndResources import dictLocationIDToStream, \
                                 MSG_TYPE_ERROR, SECRET_KEY, ACC_ID_KEY, \
                                 STREAM_ERROR_LIMIT, \
                                 SAMPLING_FRAME_TEST_CONNECTION
@@ -24,6 +26,7 @@ class ParkingObjDetection:
     def __init__(self):
 
         self.app = FastAPI()
+        self.detect = ParkingObjectDetection()
 
         #temp setting for using local host to run for both server and client
         # Allow all origins (useful for development)
@@ -179,6 +182,10 @@ class ParkingObjDetection:
                         self.post_frontend_message(websocket, MSG_TYPE_ERROR, "Streaming Error");
                         await websocket.close(reason="Streaming Error")
                         break
+
+                    
+                    #Apply Model Detection
+                    frame = self.detect.process(frame)
 
                     _, buffer = cv2.imencode('.jpg', frame)
                   
