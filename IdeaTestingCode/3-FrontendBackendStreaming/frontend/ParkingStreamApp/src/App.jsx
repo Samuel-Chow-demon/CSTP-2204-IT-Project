@@ -6,6 +6,7 @@ import DisplayStream from './DashboardStream'
 function App() {
 
   const [accID, setAccID] = useState("")
+  const [locationID, setLocationID] = useState("")
   const [timeoutSec, setTimeoutSec] = useState(10)
 
   const enterTimeoutSec = (e)=>{
@@ -25,8 +26,16 @@ function App() {
       <div>
         <TextField variant="outlined"
           label="Account ID"
-          value={accID.current}
+          value={accID}
           onChange={(e)=>{setAccID(e.target.value)}}
+          >
+
+        </TextField>
+
+        <TextField variant="outlined"
+          label="Location ID"
+          value={locationID}
+          onChange={(e)=>{setLocationID(e.target.value)}}
           >
 
         </TextField>
@@ -39,7 +48,9 @@ function App() {
         </TextField>
 
         {
-          DisplayStream({accID:accID, expTime:timeoutSec})
+          DisplayStream({accID:accID,
+                          locationID:locationID,
+                         expTime:timeoutSec})
         }
 
       </div>
