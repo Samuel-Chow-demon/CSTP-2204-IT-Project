@@ -1,2 +1,4 @@
 Backend/res/*
 **/__pycache__/
+.venv
+.gitignore
