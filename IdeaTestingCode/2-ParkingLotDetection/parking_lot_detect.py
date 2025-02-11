@@ -1,6 +1,7 @@
 import cv2
 import cvzone
 from ultralytics import YOLO
+from parking_lot_count import ParkingLotCounter
 # import torch
 # import torch_directml
 import math
@@ -12,8 +13,11 @@ OCCUPIED_ID = 0
 EMPTY_ID = 1
 
 # Please modify your storage path when testing
-IMAGE_PATH = "1-Object_detect_YOLO/image/"
-VIDEO_PATH = "1-Object_detect_YOLO/video/"
+IMAGE_PATH = "D:/Image/" 
+VIDEO_PATH = "D:/Image/"
+
+#IMAGE_PATH = "1-Object_detect_YOLO/image/"
+#VIDEO_PATH = "1-Object_detect_YOLO/video/"
 
 # ---- Fail to use Xe Iris
 # set the device to DirectML to use GPU of Xe Iris
@@ -30,8 +34,8 @@ VIDEO_PATH = "1-Object_detect_YOLO/video/"
 # Image or Video testing source can be found at
 # Shared One Drive - https://vccca-my.sharepoint.com/my?csf=1&web=1&e=hYo7J9&CID=affcd743%2D27ce%2D49fb%2D95ab%2D942657958535&id=%2Fpersonal%2F000469285%5Fstudent%5Fvcc%5Fca%2FDocuments%2FCSTP%202204%20IT%20Project&FolderCTID=0x01200016AB16DA1E9D3143A1B50B05B53ACDE5
 
-video = "2.mp4"
-image = "4.jpg"
+video = "CarPark2.mp4"
+image = "2.jpg"
 
 cap = cv2.VideoCapture(VIDEO_PATH + video)
 
@@ -47,7 +51,8 @@ YOLO_11_l_lrn_parking = "yolo11l_learnParkingLot_18Jan.pt"
 
 YOLO_MODEL = YOLO_11_l_lrn_parking
 
-model = YOLO("1-Object_detect_YOLO/YOLO_weight/" + YOLO_MODEL)
+#model = YOLO("1-Object_detect_YOLO/YOLO_weight/" + YOLO_MODEL)
+model = YOLO("D:/Image/" + YOLO_MODEL)
 
 
 # YOLO default provided classification Dict
@@ -78,7 +83,8 @@ model = YOLO("1-Object_detect_YOLO/YOLO_weight/" + YOLO_MODEL)
 # cv2.destroyAllWindows()
 
 def RunAndDetect(is_Stream = True):
-
+    #Create the object here to call function later  
+    counter = ParkingLotCounter()
     while True:
 
         img = any
@@ -93,6 +99,9 @@ def RunAndDetect(is_Stream = True):
         img = resized_img
 
         results = model(img, stream=is_Stream) #, device=device)
+        
+        json_output = counter.process_results(results)
+        print(json_output)
 
         for result in results:
 
@@ -111,11 +120,10 @@ def RunAndDetect(is_Stream = True):
                 width, height = x2 - x1, y2 - y1
 
                 #print(f"{int(class_id)} -  {model.names[int(class_id)]}")
-
+                
                 # (B, G, R)
                 color = (128, 0, 255) if int(class_id) == OCCUPIED_ID else (255, 0, 0)
-
-                cvzone.cornerRect(img, (x1, y1, width, height), 5, 2, colorR=color)
+                cvzone.cornerRect(img, (x1, y1, width, height), 5, 2, colorR=color)                
 
                 #cvzone.putTextRect(img, f'{model.names[int(class_id)]} - {confidence}', (max(0, x1), max(35, y1)), scale = 1, thickness = 1)
 
