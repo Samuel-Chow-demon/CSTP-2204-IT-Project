@@ -43,14 +43,16 @@ class ParkingObjectDetection:
                 
                 # (B, G, R)
                 match(int(class_id)):
-                    case DETECT_OBJ.OCCUPIED:
+                    case DETECT_OBJ.OCCUPIED.value:
                         color = DETECT_OBJ_COLOR.OCCUPIED.value
-                    case DETECT_OBJ.EMPTY:
+                    case DETECT_OBJ.EMPTY.value:
                         color = DETECT_OBJ_COLOR.EMPTY.value
                     case _:
                         color = DETECT_OBJ_COLOR.NONE.value
+
+                #print(f"{int(class_id)} -  {self.model.names[int(class_id)]} - Color{color}")
                 
-                cvzone.cornerRect(frame, (x1, y1, width, height), 8, 2, colorR=color)                
+                cvzone.cornerRect(frame, (x1, y1, width, height), 10, 2, 4, colorR=color)                
 
                 #cvzone.putTextRect(img, f'{model.names[int(class_id)]} - {confidence}', (max(0, x1), max(35, y1)), scale = 1, thickness = 1)
 

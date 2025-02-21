@@ -29,15 +29,17 @@ class DETECT_OBJ(Enum):
 
 # (B, G, R)
 class DETECT_OBJ_COLOR(Enum):
-    OCCUPIED = (128, 0, 255)
-    EMPTY = (255, 0, 0)
+    OCCUPIED = (105, 78, 237)
+    EMPTY = (135, 245, 127)
     NONE = (0, 0, 0)
 
 class YOLO_MODEL_KEY(Enum):
     V11_N = 0
     V11_l_18JAN = 1
+    V11_s_2FEB = 2
 
 YOLO_model_dict = {
-    YOLO_MODEL_KEY.V11_N : "utilities\model\YOLO_weight\yolo11n.pt",
-    YOLO_MODEL_KEY.V11_l_18JAN : "utilities\model\YOLO_weight\yolo11_l_18Jan.pt"
+    YOLO_MODEL_KEY.V11_N : r"utilities\model\YOLO_weight\yolo11n.pt",
+    YOLO_MODEL_KEY.V11_l_18JAN : r"utilities\model\YOLO_weight\yolo11_l_18Jan.pt",
+    YOLO_MODEL_KEY.V11_s_2FEB : r"utilities\model\YOLO_weight\yolo11_s_11Feb.pt",
 }

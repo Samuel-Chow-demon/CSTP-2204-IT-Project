@@ -13,7 +13,8 @@ from utilities.ParkingObjDetection import ParkingObjectDetection
 from utilities.DefineAndResources import dictLocationIDToStream, \
                                 MSG_TYPE_ERROR, SECRET_KEY, ACC_ID_KEY, \
                                 STREAM_ERROR_LIMIT, \
-                                SAMPLING_FRAME_TEST_CONNECTION
+                                SAMPLING_FRAME_TEST_CONNECTION,\
+                                YOLO_MODEL_KEY
 
 #temp setting for using local host to run for both server and client
 from fastapi.middleware.cors import CORSMiddleware
@@ -26,7 +27,7 @@ class ParkingObjDetection:
     def __init__(self):
 
         self.app = FastAPI()
-        self.detect = ParkingObjectDetection()
+        self.detect = ParkingObjectDetection(yolo_model=YOLO_MODEL_KEY.V11_l_18JAN)
 
         #temp setting for using local host to run for both server and client
         # Allow all origins (useful for development)
