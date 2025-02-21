@@ -22,9 +22,9 @@ class ParkingLotCounter:
             
             for class_id in class_ids:
                 match(int(class_id)):
-                    case DETECT_OBJ.OCCUPIED:
+                    case DETECT_OBJ.OCCUPIED.value:
                         self.occupied_count += 1
-                    case DETECT_OBJ.EMPTY:
+                    case DETECT_OBJ.EMPTY.value:
                         self.empty_count += 1
 
 
