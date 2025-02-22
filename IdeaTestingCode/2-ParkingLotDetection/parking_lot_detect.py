@@ -1,7 +1,7 @@
 import cv2
 import cvzone
 from ultralytics import YOLO
-from parking_lot_count import ParkingLotCounter
+from Backend.ObjectDetectionServer.utilities.ParkingLotCount import ParkingLotCounter
 # import torch
 # import torch_directml
 import math

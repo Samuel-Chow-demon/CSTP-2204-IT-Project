@@ -1,5 +1,6 @@
 import json
-
+from utilities.DefineAndResources import YOLO_model_dict, \
+                                        DETECT_OBJ
 
 class ParkingLotCounter:
     
@@ -15,17 +16,17 @@ class ParkingLotCounter:
         """
         self.occupied_count = 0
         self.empty_count = 0
-        OCCUPIED_ID = 0
-        EMPTY_ID = 1
         
         for result in results:
             class_ids = result.boxes.cls
             
             for class_id in class_ids:
-                if int(class_id) == OCCUPIED_ID:
-                    self.occupied_count += 1
-                elif int(class_id) == EMPTY_ID:
-                    self.empty_count += 1
+                match(int(class_id)):
+                    case DETECT_OBJ.OCCUPIED:
+                        self.occupied_count += 1
+                    case DETECT_OBJ.EMPTY:
+                        self.empty_count += 1
+
 
         return json.dumps({
             "occupied": self.occupied_count,
