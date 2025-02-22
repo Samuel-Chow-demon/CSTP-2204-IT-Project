@@ -1,5 +1,4 @@
-Backend/res/*
+bitBackend/res/*
 Backend/ObjectDetectionServer/utilities/model/YOLO_weight/yolo*
 **/__pycache__/
 .venv
-.gitignore
