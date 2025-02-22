@@ -1,0 +1,5 @@
+requirements: pip install fastapi uvicorn
+
+
+cd IdeaTestingCode\2-ParkingLotDetection\Server
+uvicorn server_api:app --reload
