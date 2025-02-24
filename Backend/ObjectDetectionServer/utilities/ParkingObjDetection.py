@@ -2,6 +2,7 @@ import cv2
 import cvzone
 from ultralytics import YOLO
 
+from utilities.ParkingLotCount import ParkingLotCounter
 from utilities.DefineAndResources import YOLO_model_dict, \
                                         YOLO_MODEL_KEY, DETECT_OBJ, DETECT_OBJ_COLOR
 
@@ -13,6 +14,7 @@ class ParkingObjectDetection:
         print(yolo_model_path)
 
         self.model = YOLO(YOLO_model_dict[yolo_model])
+        self.counter = ParkingLotCounter()
 
 
     # resize is (width, height)
@@ -22,6 +24,9 @@ class ParkingObjectDetection:
             frame = cv2.resize(frame, resize)
 
         results = self.model(frame, stream = True)
+
+        # Each frame clear counter
+        self.counter.clear_counter()
 
         for result in results:
 
@@ -45,8 +50,10 @@ class ParkingObjectDetection:
                 match(int(class_id)):
                     case DETECT_OBJ.OCCUPIED.value:
                         color = DETECT_OBJ_COLOR.OCCUPIED.value
+                        self.counter.add_occupied_count()
                     case DETECT_OBJ.EMPTY.value:
                         color = DETECT_OBJ_COLOR.EMPTY.value
+                        self.counter.add_empty_count()
                     case _:
                         color = DETECT_OBJ_COLOR.NONE.value
 
@@ -56,4 +63,4 @@ class ParkingObjectDetection:
 
                 #cvzone.putTextRect(img, f'{model.names[int(class_id)]} - {confidence}', (max(0, x1), max(35, y1)), scale = 1, thickness = 1)
 
-        return frame
+        return frame, self.counter.return_data()

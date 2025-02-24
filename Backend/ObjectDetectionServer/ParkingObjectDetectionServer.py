@@ -7,6 +7,7 @@ import cv2
 from fastapi.testclient import TestClient
 from fastapi.responses import JSONResponse
 from fastapi.websockets import WebSocketState
+import struct
 
 from utilities.ParkingObjDetection import ParkingObjectDetection
 
@@ -137,6 +138,9 @@ class ParkingObjDetection:
 
             #test_client_count = 0
 
+            #default Detection OFF
+            detection_on = False
+
             while True:
                 try:
                     # Check if WebSocket is still connected
@@ -159,6 +163,12 @@ class ParkingObjDetection:
                             case "CLOSE":
                                 print("WebSocket Close Request by Frontend")
                                 break
+                            case "DETECT_OFF":
+                                print(f"Request {request_msg}")
+                                detection_on = False
+                            case "DETECT_ON":
+                                print(f"Request {request_msg}")
+                                detection_on = True
                             case _:
                                 pass
 
@@ -184,16 +194,36 @@ class ParkingObjDetection:
                         await websocket.close(reason="Streaming Error")
                         break
 
-                    
+                    data = {}
+                    number_of_data = 0
+                    int_data = 0
+
                     #Apply Model Detection
-                    frame = self.detect.process(frame)
+                    if detection_on:
+                        frame, data = self.detect.process(frame)
 
                     _, buffer = cv2.imencode('.jpg', frame)
                   
                     # Check token expiration
                     #jwt.decode(token, SECRET_KEY, algorithms=["HS256"])  # would trig exception if expired
+
+                    if len(data) != 0:
+                        int_data = struct.pack(">II", data["occupied"], data["empty"])  # `>II` = big-endian 2 unsigned integers (4 bytes each)
+
+                        number_of_data = 2
+
+                    # first Byte indicates number of data byte in the binary
+                    number_of_data_byte = struct.pack(">I", number_of_data)
+                    combined_bytes = number_of_data_byte
+
+                    # following with the data byte
+                    if int_data:
+                        combined_bytes += int_data
+
+                    # Then finally the image buffer bytes
+                    combined_bytes += buffer.tobytes()
                     
-                    await websocket.send_bytes(buffer.tobytes())
+                    await websocket.send_bytes(combined_bytes)
 
                     #await asyncio.sleep(1/30)  # Approx. 30 FPS
 
