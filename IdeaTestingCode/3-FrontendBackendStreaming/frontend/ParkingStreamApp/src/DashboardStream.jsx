@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
+import Switch from '@mui/material/Switch';
 
 const DisplayStream = ({ accID, locationID, expTime }) => {
 	
@@ -14,6 +15,9 @@ const DisplayStream = ({ accID, locationID, expTime }) => {
 
     const [isLoading, SetIsLoading] = useState(true)
     const [isStopped, SetIsStopped] = useState(true)
+    const [isOnDetection, SetOnDetection] = useState(true)
+    const [occupied, SetOccupied] = useState(0)
+    const [empty, SetEmpty] = useState(0)
     const [message, SetMessage] = useState("Press Connect To Stream.")
 
     const videoRef = useRef(null);
@@ -39,13 +43,43 @@ const DisplayStream = ({ accID, locationID, expTime }) => {
         SetIsStopped(true)
     }
 
-    const receiveMessageHandle = (event)=>{
+    const receiveMessageHandle = async (event)=>{
+
+        //console.log("Raw WebSocket message received:", event.data); 
 
         // If data is binary
         if (event.data instanceof Blob)
         {
-            const blob = new Blob([event.data], { type: "image/jpeg" });
-            const imgUrl = URL.createObjectURL(blob);
+            const blob = event.data;
+
+             // Convert Blob to ArrayBuffer
+            const arrayBuffer = await blob.arrayBuffer();
+            const dataView = new DataView(arrayBuffer);
+
+            const dataNumberOfData = dataView.getUint32(0, false);
+
+            let imageDataSlicePos = 4 // default after the NumberOfData
+
+            // if had data for display
+            if (dataNumberOfData != 0)
+            {
+                // Extract the following Number of Data bytes (occupied and empty)
+                const dataOccupied = dataView.getUint32(imageDataSlicePos + 0, false); // 2nd 4 bytes
+                const dataEmpty = dataView.getUint32(imageDataSlicePos + 4, false);    // 3rd 4 bytes
+                //console.log(`Occupied : ${dataOccupied}, Empty : ${dataEmpty}`);
+
+                SetOccupied(dataOccupied)
+                SetEmpty(dataEmpty)
+
+                imageDataSlicePos += (dataNumberOfData * 4)
+            }
+
+            // Get the image data (everything except the last 8 bytes)
+            const imageData = arrayBuffer.slice(imageDataSlicePos);
+
+            //const blobImage = new Blob([event.data], { type: "image/jpeg" });
+            const blobImage = new Blob([imageData], { type: "image/jpeg" });
+            const imgUrl = URL.createObjectURL(blobImage);
 
             if (videoRef.current) {
                 videoRef.current.src = imgUrl;
@@ -55,6 +89,7 @@ const DisplayStream = ({ accID, locationID, expTime }) => {
         else if (typeof event.data === "string")
         {
             const jsonData = JSON.parse(event.data)
+            console.log(`data : ${jsonData.message}`);
 
             if ("type" in jsonData)
             {
@@ -97,9 +132,17 @@ const DisplayStream = ({ accID, locationID, expTime }) => {
             
             wsRef.current = websocket;
 
+
             websocket.onopen = () => {
                 SetIsLoading(false)
                 console.log("WebSocket connected.");
+
+                // Every Reconnection Disable the Detection
+                wsRef.current.send("DETECT_OFF")
+                SetOnDetection((prev) => {
+                    console.log("Previous detection state:", prev); // Debug log
+                    return false;
+                });
             };
 
             websocket.onmessage = (event) => {
@@ -154,6 +197,20 @@ const DisplayStream = ({ accID, locationID, expTime }) => {
         }
     }
 
+    const ToggleDetection = ()=>{
+
+        const ws = wsRef.current;
+
+        if (ws &&
+            ws.readyState == WebSocket.OPEN)
+        {
+            console.log(`front end request ${isOnDetection ? "OFF" : "ON"} Detection`);
+
+            ws.send(isOnDetection ? "DETECT_OFF" : "DETECT_ON"); // send to backend for ON / OFF Detection
+            setTimeout(()=>SetOnDetection(!isOnDetection), 50); // after 50 ms to toggle the UI
+        }
+    }
+
     // useEffect(() => {
 		
     //     if (ws)
@@ -190,7 +247,25 @@ const DisplayStream = ({ accID, locationID, expTime }) => {
                 )
                 :
                 <>
-                    <button onClick={Stop}>Stop</button>
+                    <div style={{
+                        display: "flex",
+                        gap: "10px",
+                        width : "200px",
+                        alignItems: "flex-start"
+                    }}>
+                        <button onClick={Stop}>Stop</button>
+                        <Switch checked={isOnDetection} onChange={ToggleDetection} name="Detection On" />
+                        <span>Detection On</span>
+                    </div>
+                    <div style={{
+                        display: "flex",
+                        gap: "10px",
+                        width : "200px",
+                        alignItems: "flex-start"
+                    }}>
+                        <span>Occupied : {isOnDetection ? occupied : "N/A"}</span>
+                        <span>Empty : {isOnDetection ? empty : "N/A"}</span>
+                    </div>
                     <img ref={videoRef} alt="Live Stream" style={{ width: "100%" }} />
                 </>
             }
