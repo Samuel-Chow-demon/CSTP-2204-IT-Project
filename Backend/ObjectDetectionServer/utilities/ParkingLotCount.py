@@ -22,10 +22,12 @@ class ParkingLotCounter:
             
             for class_id in class_ids:
                 match(int(class_id)):
+                    case DETECT_OBJ.OCCUPIED.value:
                     case DETECT_OBJ.OCCUPIED:
                         self.occupied_count += 1
                     case DETECT_OBJ.EMPTY:
                         self.empty_count += 1
+                    case DETECT_OBJ.EMPTY.value:
 
 
         return json.dumps({
