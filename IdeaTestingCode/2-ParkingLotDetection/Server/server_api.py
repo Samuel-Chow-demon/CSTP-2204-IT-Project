@@ -6,18 +6,18 @@ app = FastAPI()
 #temp
 # Parking lot model
 class ParkingLot(BaseModel):
-    id: int
+    id: str
     name: str
     location: str
-    total_spots: int
-    available_spots: int
+    empty : int
+    occupied: int
 
 # In-memory database
 parking_lots = [
-    ParkingLot(id=1, name="Downtown Lot", location="Downtown", total_spots=100, available_spots=25),
-    ParkingLot(id=2, name="Airport Parking", location="Near Airport", total_spots=200, available_spots=50),
-    ParkingLot(id=3, name="Mall Parking", location="Shopping Mall", total_spots=150, available_spots=30),
-    ParkingLot(id=4, name="Stadium Lot", location="Sports Arena", total_spots=300, available_spots=0),
+    ParkingLot(id="1", name="Downtown Lot", location="Downtown", empty=100, occupied=25),
+    ParkingLot(id="2", name="Airport Parking", location="Near Airport", empty=200, occupied=50),
+    ParkingLot(id="3", name="Mall Parking", location="Shopping Mall", empty=150, occupied=30),
+    ParkingLot(id="4", name="Stadium Lot", location="Sports Arena", empty=300, occupied=0),
 ]
 
 @app.get("/")
