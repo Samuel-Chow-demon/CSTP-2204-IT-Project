@@ -254,8 +254,8 @@ const DisplayStream = ({ accID, locationID, expTime }) => {
                         alignItems: "flex-start"
                     }}>
                         <button onClick={Stop}>Stop</button>
-                        <Switch checked={isOnDetection} onChange={ToggleDetection} name="Detection On" />
-                        <span>Detection On</span>
+                        <Switch checked={isOnDetection} onChange={ToggleDetection} name="Detection OnOff" />
+                        <span>Detection {isOnDetection ? "On" : "Off"}</span>
                     </div>
                     <div style={{
                         display: "flex",
