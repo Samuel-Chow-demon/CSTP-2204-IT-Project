@@ -1,3 +1,4 @@
 Backend/res/*
 Backend/ObjectDetectionServer/utilities/model/YOLO_weight/yolo*
 **/__pycache__/
+.env*
