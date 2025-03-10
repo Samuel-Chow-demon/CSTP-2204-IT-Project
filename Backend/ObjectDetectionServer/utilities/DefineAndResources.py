@@ -19,7 +19,11 @@ EXPIRE_TIME_KEY = "expTime"
 ## Define the stream source from different location ID
 dictLocationIDToStream = {
     "1" : "../res/video/1.mp4",
-    "2" : "../res/video/2.mp4"
+    "2" : "../res/video/2.mp4",
+    "5" : "../res/video/5.mp4",
+    "6" : "../res/video/6.mp4",
+    "7" : "../res/video/7.mp4",
+    "8" : "../res/video/8.mp4"
 }
 
 ## ------------------------- Detection And Calculation Defines
