@@ -4,6 +4,7 @@ import {userCollectionRef, USER_DB_NAME} from '../database/database.js'
 import {db} from "../firebase.js"
 import {getCollectionDocByRefAndID} from "../utilities/DBUtility.js"
 import { useAuth } from './AuthContext.jsx';
+import {ALERT_SUCCESS_COLOR, ALERT_ERROR_COLOR} from '../components/constant.js'
 
 const userDBContext = createContext()
 
@@ -81,12 +82,12 @@ const UserDBProvider = ({children})=>{
             // use setDoc to add data to the document
             await setDoc(docRef, data)
 
-            setAlertUserDB({...alertUserDB, message:`Success Added New User ${userName}`, color: 'success', isOpen: true, hideDuration: 1500 });
+            setAlertUserDB({...alertUserDB, message:`Success Added New User ${userName}`, color: ALERT_SUCCESS_COLOR, isOpen: true, hideDuration: 1500 });
         }
         catch(error)
         {
             const msg = `Create User Doc - Add New User Error : ${error.message}`
-            setAlertUserDB({...alertUserDB, message:msg, color: 'error', isOpen: true, hideDuration: 2000 });
+            setAlertUserDB({...alertUserDB, message:msg, color: ALERT_ERROR_COLOR, isOpen: true, hideDuration: 2000 });
         }
     }
 
@@ -100,18 +101,18 @@ const UserDBProvider = ({children})=>{
             {
                 await setDoc(userDocRef, data, {merge : true})
 
-                setAlertUserDB({...alertUserDB, message:`Success Edit User ${userName}`, color: 'success', isOpen: true, hideDuration: 1500 });
+                setAlertUserDB({...alertUserDB, message:`Success Edit User ${userName}`, color: ALERT_SUCCESS_COLOR, isOpen: true, hideDuration: 1500 });
             }
             else
             {
                 const msg = `Edit User Doc ${id} - Not Exist`
-                setAlertUserDB({...alertUserDB, message:msg, color: 'error', isOpen: true, hideDuration: 2000 });
+                setAlertUserDB({...alertUserDB, message:msg, color: ALERT_ERROR_COLOR, isOpen: true, hideDuration: 2000 });
             }
         }
         catch(error)
         {
             const msg = `Edit User Doc ${id} - Error : ${error.message}`
-            setAlertUserDB({...alertUserDB, message:msg, color: 'error', isOpen: true, hideDuration: 2000 });
+            setAlertUserDB({...alertUserDB, message:msg, color: ALERT_ERROR_COLOR, isOpen: true, hideDuration: 2000 });
         }
     }
 
@@ -141,18 +142,18 @@ const UserDBProvider = ({children})=>{
                 batch.delete(userDocRef);
                 await batch.commit();
 
-                setAlertUserDB({...alertUserDB, message:`Success Remove User ${userName}`, color: 'success', isOpen: true, hideDuration: 1500 });
+                setAlertUserDB({...alertUserDB, message:`Success Remove User ${userName}`, color: ALERT_SUCCESS_COLOR, isOpen: true, hideDuration: 1500 });
             }
             else
             {
                 const msg = `Remove User Doc ${id} - Not Exist`
-                setAlertUserDB({...alertUserDB, message:msg, color: 'error', isOpen: true, hideDuration: 2000 });
+                setAlertUserDB({...alertUserDB, message:msg, color: ALERT_ERROR_COLOR, isOpen: true, hideDuration: 2000 });
             }
         }
         catch(error)
         {
             const msg = `Remove User Doc ${id} - Error : ${error.message}`
-            setAlertUserDB({...alertUserDB, message:msg, color: 'error', isOpen: true, hideDuration: 2000 });
+            setAlertUserDB({...alertUserDB, message:msg, color: ALERT_ERROR_COLOR, isOpen: true, hideDuration: 2000 });
         }
     }
 

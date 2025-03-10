@@ -1,8 +1,9 @@
 import { createContext, useState } from "react";
 import { locationResCollectionRef } from "../database/database.js";
 import {getCollectionDocByRefAndID} from "../database/database.js"
-import { onSnapshot, writeBatch } from "firebase/firestore";
+import { deleteDoc, addDoc, doc, getDoc, getDocs, setDoc, limit, updateDoc, onSnapshot, query, where, writeBatch, arrayUnion } from "firebase/firestore";
 import {db} from '../firebase.js'
+import {ALERT_SUCCESS_COLOR, ALERT_ERROR_COLOR} from '../components/constant.js'
 
 
 const locationContext = createContext();
@@ -73,9 +74,11 @@ const LocationContextProvider = ({children, currentUser})=>{
                             setAlertLocationDB({
                                 ...alertLocationDB,
                                 message: 'Real-time Listening Location DB Fail',
-                                color: 'error',
+                                color: ALERT_ERROR_COLOR,
                                 isOpen: true,
                                 hideDuration: 2000,
+                                toggle: !alertStream.toggle,
+                                handleCLose: ()=>{setAlertStream({isOpen: false, message:""})}
                             });
                             setDBIsLoading(false);
                         }
@@ -86,14 +89,18 @@ const LocationContextProvider = ({children, currentUser})=>{
                 {
                     setDBIsLoading(false);
                     console.log("User Not Exist", error);
-                    setAlertLocationDB({...alertLocationDB, message:'User Not Exist', color: 'error', isOpen: true, hideDuration: 2000 });
+                    setAlertLocationDB({...alertLocationDB, message:'User Not Exist', color: ALERT_ERROR_COLOR, isOpen: true, hideDuration: 2000, toggle: !alertStream.toggle,
+                        handleCLose: ()=>{setAlertStream({isOpen: false, message:""})}
+                    });
                 }
             }
             catch(error)
             {
                 setDBIsLoading(false);
                 console.log("Get Stream DB Fail", error);
-                setAlertLocationDB({...alertLocationDB, message:'Access Location DB Fail', color: 'error', isOpen: true, hideDuration: 2000 });
+                setAlertLocationDB({...alertLocationDB, message:'Access Location DB Fail', color: ALERT_ERROR_COLOR, isOpen: true, hideDuration: 2000, toggle: !alertStream.toggle,
+                    handleCLose: ()=>{setAlertStream({isOpen: false, message:""})}
+                });
             }
         }
 
@@ -139,13 +146,16 @@ const LocationContextProvider = ({children, currentUser})=>{
                 await batch.commit();
 
                 triggerRefreshLocationDB();
-                setAlertLocationDB({...alertLocationDB, message:`Success Added New Location Rescource ${formData.name}`, color: 'success', isOpen: true, hideDuration: 1500 });
+                setAlertLocationDB({...alertLocationDB, message:`Success Added New Location Rescource ${formData.name}`, color: ALERT_SUCCESS_COLOR, isOpen: true, hideDuration: 1500,
+                                        toggle: !alertStream.toggle, handleCLose: ()=>{setAlertStream({isOpen: false, message:""})} });
             }
         }
         catch(error)
         {
             console.log("Add Location Doc Fail", error);
-            setAlertLocationDB({...alertLocationDB, message:'Add New Location Res Fail', color: 'error', isOpen: true, hideDuration: 2000 });
+            setAlertLocationDB({...alertLocationDB, message:'Add New Location Res Fail', color: ALERT_ERROR_COLOR, isOpen: true, hideDuration: 2000, toggle: !alertStream.toggle,
+                handleCLose: ()=>{setAlertStream({isOpen: false, message:""})}
+            });
         }
     }
 
@@ -160,17 +170,22 @@ const LocationContextProvider = ({children, currentUser})=>{
                 await setDoc(locationRef, formData, {merge: true});
 
                 triggerRefreshLocationDB();
-                setAlertLocationDB({ ...alertLocationDB, message: `Success Modify Location Resource ${locationData.name}`, color: 'success', isOpen: true, hideDuration: 1500 });
+                setAlertLocationDB({...alertLocationDB, message: `Success Modify Location Resource ${locationData.name}`, color: ALERT_SUCCESS_COLOR, isOpen: true, hideDuration: 1500,
+                    toggle: !alertStream.toggle, handleCLose: ()=>{setAlertStream({isOpen: false, message:""})} });
             }
             else
             {
                 console.log("Location Resource Not Exist", error);
-                setAlertLocationDB({ ...alertLocationDB, message: `Location Resource Not Exist`, color: 'error', isOpen: true, hideDuration: 2000 });
+                setAlertLocationDB({...alertLocationDB, message: 'Location Resource Not Exist', color: ALERT_ERROR_COLOR, isOpen: true, hideDuration: 2000, toggle: !alertStream.toggle,
+                    handleCLose: ()=>{setAlertStream({isOpen: false, message:""})}
+                });
             }
         }
         catch(error){
             console.log("Modify Stream Doc Fail", error);
-            setAlertLocationDB({ ...alertLocationDB, message: 'Modify Location Resource Fail', color: 'error', isOpen: true, hideDuration: 2000 });
+            setAlertLocationDB({...alertLocationDB, message: 'Modify Location Resource Fail', color: ALERT_ERROR_COLOR, isOpen: true, hideDuration: 2000, toggle: !alertStream.toggle,
+                handleCLose: ()=>{setAlertStream({isOpen: false, message:""})}
+            });
         }
     }
 
@@ -201,17 +216,22 @@ const LocationContextProvider = ({children, currentUser})=>{
                 await batchStep2.commit();
 
                 triggerRefreshLocationDB();
-                setAlertLocationDB({...alertLocationDB, message:`Success Remove Location Resource ${locationResName}`, color: 'success', isOpen: true, hideDuration: 1500 });
+                setAlertLocationDB({...alertLocationDB, message: `Success Remove Location Resource ${locationResName}`, color: ALERT_SUCCESS_COLOR, isOpen: true, hideDuration: 1500,
+                    toggle: !alertStream.toggle, handleCLose: ()=>{setAlertStream({isOpen: false, message:""})} });
             }
             else
             {
                 console.log("Location Resource Not Exist", error);
-                setAlertLocationDB({ ...alertLocationDB, message: `Location Resource Not Exist`, color: 'error', isOpen: true, hideDuration: 2000 });
+                setAlertLocationDB({...alertLocationDB, message: 'Location Resource Not Exist', color: ALERT_ERROR_COLOR, isOpen: true, hideDuration: 2000, toggle: !alertStream.toggle,
+                    handleCLose: ()=>{setAlertStream({isOpen: false, message:""})}
+                });
             }
         }
         catch(error){
             console.log("Delete Location Resource Fail", error);
-            setAlertLocationDB({...alertLocationDB, message:'Delete Location Resource Fail', color: 'error', isOpen: true, hideDuration: 2000 });
+            setAlertLocationDB({...alertLocationDB, message: 'Delete Location Resource Fail', color: ALERT_ERROR_COLOR, isOpen: true, hideDuration: 2000, toggle: !alertStream.toggle,
+                handleCLose: ()=>{setAlertStream({isOpen: false, message:""})}
+            });
         }
     }
 

@@ -1,11 +1,12 @@
 import { Box, CircularProgress } from '@mui/material'
 import React, {useEffect, useState } from 'react'
-import Sidebar from './HomeSideBar'
+import Sidebar from '../components/HomeSideBar'
 import { Outlet } from 'react-router-dom'
-import AppNavBar from './AppNavBar'
+import AppNavBar from '../components/AppNavBar'
 import { useAuth } from '../contexts/AuthContext'
 import { UserContextProvider } from '../contexts/userContext'
 import { purple } from '@mui/material/colors'
+import { StreamContextProvider } from '../contexts/StreamDBContext'
 
 const Dashboard = () => {
 
@@ -56,9 +57,12 @@ const Dashboard = () => {
                 height: '100%'
               }}>
               <UserContextProvider currentUser={currentUser}>
-                <AppNavBar/>
-                {/* use Outlet can repalce the child component */}
-                <Outlet />
+                <StreamContextProvider currentUser={currentUser}>
+
+                  <AppNavBar/>
+                  {/* use Outlet can repalce the child component */}
+                  <Outlet />
+                </StreamContextProvider>
               </UserContextProvider>
             </Box>
         </Box>

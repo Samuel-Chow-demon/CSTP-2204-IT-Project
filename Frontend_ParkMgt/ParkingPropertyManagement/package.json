@@ -14,12 +14,14 @@
     "@emotion/styled": "^11.14.0",
     "@mui/icons-material": "^6.4.6",
     "@mui/material": "^6.4.6",
+    "@mui/x-data-grid": "^7.27.3",
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
     "firebase": "^11.4.0",
     "react": "^19.0.0",
     "react-bootstrap": "^2.10.9",
     "react-dom": "^19.0.0",
+    "react-draggable": "^4.4.6",
     "react-router-dom": "^7.2.0"
   },
   "devDependencies": {

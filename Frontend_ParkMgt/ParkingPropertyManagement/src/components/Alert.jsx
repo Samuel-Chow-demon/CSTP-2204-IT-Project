@@ -1,12 +1,13 @@
 import { Snackbar } from '@mui/material'
+import { grey } from '@mui/material/colors';
 import React, { memo, useEffect, useState } from 'react'
 
 const Alert = (props) => {
 
     const [open, setOpen] = useState(false);
 
-    const { isOpen = false, hideDuration = 6000, handleCLose, message = 'Message', location = { vertical: 'bottom', horizontal: 'left' }
-        , color = 'success' } = props.alertConfig;
+    const { isOpen = false, hideDuration = 6000, handleCLose, message = 'Message', location = { vertical: 'top', horizontal: 'left' }
+        , color = 'success', toggle = true } = props.alertConfig;
 
     useEffect(() => {
 
@@ -25,7 +26,7 @@ const Alert = (props) => {
         {
             setOpen(false);
         }
-    }, [isOpen, hideDuration]);
+    }, [isOpen, hideDuration, toggle]);
 
     return (
         <Snackbar
@@ -34,7 +35,13 @@ const Alert = (props) => {
             onClose={handleCLose}
             message={message}
             anchorOrigin={location}
-            color={color}
+            //color={color}
+            sx={{
+                "& .MuiSnackbarContent-root": {
+                    backgroundColor: color, // Apply background color
+                    color: grey[800]
+                }
+            }}
         />
     )
 }

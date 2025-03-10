@@ -5,7 +5,7 @@ import AlertDisplay from '../utilities/AlertDisplay'
 import getErrorCode from '../database/error'
 import { useUserDB } from '../contexts/userDBContext'
 import { useNavigate } from 'react-router-dom'
-import { CONST_PATH } from './constant'
+import { CONST_PATH } from '../components/constant.js'
 
 const Login = ({changeToSigUpTab}) => {
 

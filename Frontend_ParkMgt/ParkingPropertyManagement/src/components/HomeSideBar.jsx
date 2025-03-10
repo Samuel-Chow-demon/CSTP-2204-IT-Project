@@ -96,17 +96,17 @@ function Sidebar({signOutHandle}) {
         <ListItemComponent 
             IconComponent={<LiveTvIcon fontSize="large" sx={{ color: '#6c727f' }} />}
             itemText={"Stream Profile"}
-            buttonClick={()=>navigate(CONST_PATH.streamProf)}
+            buttonClick={()=>navigate(CONST_PATH.home + CONST_PATH.streamProf)}
         />
         <ListItemComponent 
             IconComponent={<EditLocationIcon fontSize="large" sx={{ color: '#6e727d' }} />}
             itemText={"Location Profile"}
-            buttonClick={()=>navigate(CONST_PATH.locationProf)}
+            buttonClick={()=>navigate(CONST_PATH.home + CONST_PATH.locationProf)}
         />
         <ListItemComponent 
             IconComponent={<AccountCircle fontSize="large" sx={{ color: '#6e727d' }} />}
             itemText={"Account Profile"}
-            buttonClick={()=>navigate(CONST_PATH.accountProf)}
+            buttonClick={()=>navigate(CONST_PATH.home + CONST_PATH.accountProf)}
         />
         <ListItemComponent 
             IconComponent={<Logout fontSize="large" sx={{ color: '#6f727c' }} />}

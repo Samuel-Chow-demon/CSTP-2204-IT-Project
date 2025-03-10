@@ -2,12 +2,13 @@
 import { Container } from 'react-bootstrap'
 import {AuthProvider} from '../contexts/AuthContext'
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import LogInSignUp from './LogInSignUp';
+import LogInSignUp from '../pages/LogInSignUp';
 import { UserDBProvider } from '../contexts/userDBContext';
-import Dashboard from './Dashboard';
+import Dashboard from '../pages/Dashboard';
 import { CONST_PATH } from './constant';
 import { Navigate, useRoutes } from 'react-router-dom';
-import Workspace from './WorkspaceBoard';
+import Workspace from '../pages/WorkspaceBoard';
+import StreamResBoard from '../pages/StreamResBoard';
 
 function App() {
 
@@ -29,10 +30,10 @@ function App() {
             path: CONST_PATH.workspace.slice(1),   // '/home/workspace', slice(1) remove the '/' from the constant
             element: <Workspace />
           },
-          // {
-          //   path: CONST_PATH.streamProf.slice(1),   // '/home/stream-profile', slice(1) remove the '/' from the constant
-          //   element: <UserProfile />
-          // },
+          {
+            path: CONST_PATH.streamProf.slice(1),   // '/home/stream-profile', slice(1) remove the '/' from the constant
+            element: <StreamResBoard />
+          },
           // {
           //   path: CONST_PATH.locationProf.slice(1),   // '/home/location-profile', slice(1) remove the '/' from the constant
           //   element: <UserProfile />
