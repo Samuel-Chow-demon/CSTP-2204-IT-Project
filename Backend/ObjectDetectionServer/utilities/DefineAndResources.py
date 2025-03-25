@@ -16,6 +16,9 @@ MSG_TYPE_ERROR = "error"
 ACC_ID_KEY = "accID"
 EXPIRE_TIME_KEY = "expTime"
 
+## Firebase collection
+STREAM_RES_COLLECTION_NAME = "STREAM_RES"
+
 ## Define the stream source from different location ID
 dictLocationIDToStream = {
     "1" : "../res/video/1.mp4",

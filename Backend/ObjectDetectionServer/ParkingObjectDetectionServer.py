@@ -11,10 +11,13 @@ import struct
 
 from utilities.ParkingObjDetection import ParkingObjectDetection
 
+from database.firebase import db
+
 from utilities.DefineAndResources import dictLocationIDToStream, \
                                 MSG_TYPE_ERROR, SECRET_KEY, ACC_ID_KEY, \
                                 STREAM_ERROR_LIMIT, \
                                 SAMPLING_FRAME_TEST_CONNECTION,\
+                                STREAM_RES_COLLECTION_NAME,\
                                 YOLO_MODEL_KEY
 
 #temp setting for using local host to run for both server and client
@@ -29,6 +32,7 @@ class ParkingObjDetection:
 
         self.app = FastAPI()
         self.detect = ParkingObjectDetection(yolo_model=YOLO_MODEL_KEY.V11_l_18JAN)
+        self.stream_res_collection_db = db.collection(STREAM_RES_COLLECTION_NAME)
 
         #temp setting for using local host to run for both server and client
         # Allow all origins (useful for development)
@@ -51,6 +55,22 @@ class ParkingObjDetection:
     def is_client_connected(self):
         client = TestClient(self.app)
         return client.get("/").status_code == 200
+    
+    def get_firebase_stream_api(self, id):
+        ## refresh first
+        self.stream_res_collection_db = db.collection(STREAM_RES_COLLECTION_NAME)
+
+        ## fetch doc
+        doc = self.stream_res_collection_db.document(id).get()
+
+
+        if doc.exists:
+            doc_data = doc.to_dict()
+            stream_api_path = doc_data.get('streamAPI')
+            print(f"stream api path {stream_api_path}")
+            return stream_api_path
+        else:
+            return None
     
     def generate_token(self, accID: str, expiration: int): ## in seconds
         """Generate a JWT token with a time limit"""
@@ -117,22 +137,30 @@ class ParkingObjDetection:
                 await websocket.close(reason="Invalid token")
                 return
             
-            if locationID not in dictLocationIDToStream:
-                print(f"Invalid Location ID : {accIDDecoded}")
-                self.post_frontend_message(websocket, MSG_TYPE_ERROR, "Invalid Location");
-                await websocket.close(reason="Invalid Location")
+            # if locationID not in dictLocationIDToStream:
+            #     print(f"Invalid Location ID : {accIDDecoded}")
+            #     self.post_frontend_message(websocket, MSG_TYPE_ERROR, "Invalid Location");
+            #     await websocket.close(reason="Invalid Location")
+            #     return
+                 
+            ## Retrieve the streamID to streamAPI (currently is static path)
+            print(f"Location Stream ID {locationID}")
+            stream_api_path = self.get_firebase_stream_api(locationID)
+            if stream_api_path is None:
+                print(f"Database has No Stream Resources ID : {locationID}")
+                self.post_frontend_message(websocket, MSG_TYPE_ERROR, "Invalid Stream Res ID");
+                await websocket.close(reason="Invalid Stream ID")
                 return
-        
+            
             ## here should Log to Database
             self.active_connections[(accID, locationID)] = websocket
             print(f"Connection accepted for accID: {accID} on {time.time()}")
-            
 
             # Start video capture
-            video = dictLocationIDToStream[locationID]
-            print(f"{accID} - {video}")
+            ##stream_api_path = dictLocationIDToStream[locationID]
+            print(f"{accID} - {stream_api_path}")
 
-            cap = cv2.VideoCapture(video)
+            cap = cv2.VideoCapture(stream_api_path)
             
             streaming_error = 0
 
