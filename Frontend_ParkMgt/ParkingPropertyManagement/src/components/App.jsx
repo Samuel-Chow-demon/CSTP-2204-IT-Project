@@ -9,6 +9,8 @@ import { CONST_PATH } from './constant';
 import { Navigate, useRoutes } from 'react-router-dom';
 import Workspace from '../pages/WorkspaceBoard';
 import StreamResBoard from '../pages/StreamResBoard';
+import LocationResBoard from '../pages/LocationResBoard';
+import Landing from '../pages/Landing';
 
 function App() {
 
@@ -16,7 +18,7 @@ function App() {
     [
       {
         path: CONST_PATH.landing,   // '/'
-        element: <LogInSignUp />
+        element: <Landing />
       },
       {
         path: CONST_PATH.signInUp,   // '/signup-login'
@@ -34,10 +36,10 @@ function App() {
             path: CONST_PATH.streamProf.slice(1),   // '/home/stream-profile', slice(1) remove the '/' from the constant
             element: <StreamResBoard />
           },
-          // {
-          //   path: CONST_PATH.locationProf.slice(1),   // '/home/location-profile', slice(1) remove the '/' from the constant
-          //   element: <UserProfile />
-          // },
+          {
+            path: CONST_PATH.locationProf.slice(1),   // '/home/location-profile', slice(1) remove the '/' from the constant
+            element: <LocationResBoard />
+          },
           // {
           //   path: CONST_PATH.accountProf.slice(1),   // '/home/account-profile', slice(1) remove the '/' from the constant
           //   element: <UserProfile />
