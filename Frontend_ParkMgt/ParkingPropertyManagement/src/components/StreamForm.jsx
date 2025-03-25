@@ -36,7 +36,7 @@ const StreamForm = ({setOpenDialog, currentStreamForm = {}})=>{
     useEffect(()=>{
 
         setRegisterFieldErrChk([
-            {'field' : 'name', 'condition' : (inputFormData)=>inputFormData.name.length > 0, 'errMsg' : 'Stream Name Cannot Empty'},
+            {'field' : 'name', 'condition' : (inputFormData)=>inputFormData.name.length > 0, 'errMsg' : 'Stream Name Cannot Be Empty'},
             {'field' : 'streamAPI', 'condition' : (inputFormData)=>inputFormData.streamAPI.length > 0, 'errMsg' : 'Stream API Cannot Empty'}
         ])
     

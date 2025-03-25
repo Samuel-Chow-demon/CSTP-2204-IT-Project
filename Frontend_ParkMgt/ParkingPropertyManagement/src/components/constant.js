@@ -8,7 +8,7 @@ const CONST_PATH = {
     accountProf : '/account-profile' 
 };
 
-const ALERT_SUCCESS_COLOR = "#92cc8f";
+const ALERT_SUCCESS_COLOR = "#588f56";
 const ALERT_ERROR_COLOR = "#cf74a1";
 
 export{CONST_PATH, ALERT_SUCCESS_COLOR, ALERT_ERROR_COLOR}

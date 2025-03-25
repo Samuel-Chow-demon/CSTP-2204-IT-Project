@@ -7,6 +7,7 @@ import { useAuth } from '../contexts/AuthContext'
 import { UserContextProvider } from '../contexts/userContext'
 import { purple } from '@mui/material/colors'
 import { StreamContextProvider } from '../contexts/StreamDBContext'
+import { LocationContextProvider } from '../contexts/LocationDBContext'
 
 const Dashboard = () => {
 
@@ -58,10 +59,13 @@ const Dashboard = () => {
               }}>
               <UserContextProvider currentUser={currentUser}>
                 <StreamContextProvider currentUser={currentUser}>
+                  <LocationContextProvider currentUser={currentUser}>
 
-                  <AppNavBar/>
-                  {/* use Outlet can repalce the child component */}
-                  <Outlet />
+                    <AppNavBar/>
+                    {/* use Outlet can repalce the child component */}
+                    <Outlet />
+
+                  </LocationContextProvider>
                 </StreamContextProvider>
               </UserContextProvider>
             </Box>
