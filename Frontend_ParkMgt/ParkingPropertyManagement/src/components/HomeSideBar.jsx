@@ -44,7 +44,8 @@ function Sidebar({signOutHandle}) {
       {
           await signOutHandle()
 
-          navigate(CONST_PATH.landing)
+          //navigate(CONST_PATH.landing)
+          window.location.href = '/';
       }
       catch(error)
       {
@@ -103,11 +104,11 @@ function Sidebar({signOutHandle}) {
             itemText={"Location Profile"}
             buttonClick={()=>navigate(CONST_PATH.home + CONST_PATH.locationProf)}
         />
-        <ListItemComponent 
+        {/* <ListItemComponent 
             IconComponent={<AccountCircle fontSize="large" sx={{ color: '#6e727d' }} />}
             itemText={"Account Profile"}
             buttonClick={()=>navigate(CONST_PATH.home + CONST_PATH.accountProf)}
-        />
+        /> */}
         <ListItemComponent 
             IconComponent={<Logout fontSize="large" sx={{ color: '#6f727c' }} />}
             itemText={"Logout"}
