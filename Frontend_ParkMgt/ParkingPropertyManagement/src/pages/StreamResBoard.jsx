@@ -41,7 +41,7 @@ const StreamResBoard = () => {
   } = useStreamDB()
 
   const [selectedStreams, setSelectedStreams] = useState([])
-  const [selectedDelStreamsName, setSelectedSelStreamsName] = useState([])
+  const [selectedDelStreamsName, setSelectedDelStreamsName] = useState([])
 
   const [openCreateEditDialog, setOpenCreateEditDialog] = useState(false);
   const [editForm, setEditForm] = useState({})
@@ -91,7 +91,7 @@ const StreamResBoard = () => {
           aria-labelledby="draggable-dialog-title"
         >
           <DialogTitle style={{ cursor: 'move', textAlign: 'center' }} id="draggable-dialog-title">
-            Create Stream Resource
+            {Object.keys(editForm).length <= 0 ? "Create" : "Edit"} Stream Resource
           </DialogTitle>
           <DialogContent>
             <Paper style={{
@@ -222,7 +222,7 @@ const StreamResBoard = () => {
                                     .filter((stream)=>selectedStreams.includes(stream.id))
                                     .map((selectedStream)=>selectedStream.name)
 
-      setSelectedSelStreamsName(selectedStreamName)
+      setSelectedDelStreamsName(selectedStreamName)
       setOpenDelDialog(true)
     }
   }
@@ -339,7 +339,7 @@ const StreamResBoard = () => {
                   border: 0,
                   backgroundColor: "#d4c1e3",
                   '& .MuiDataGrid-row:hover': {
-                    backgroundColor: 'lightblue', // Change to your desired color
+                    backgroundColor: 'lightblue',
                   },
                   ".MuiTablePagination-displayedRows, .MuiTablePagination-selectLabel": {
                     "marginTop": "1em",

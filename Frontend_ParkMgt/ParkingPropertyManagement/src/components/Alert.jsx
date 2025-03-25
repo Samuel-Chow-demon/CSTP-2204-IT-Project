@@ -35,11 +35,11 @@ const Alert = (props) => {
             onClose={handleCLose}
             message={message}
             anchorOrigin={location}
-            //color={color}
+            color={color}
             sx={{
                 "& .MuiSnackbarContent-root": {
                     backgroundColor: color, // Apply background color
-                    color: grey[800]
+                    color: grey[200]
                 }
             }}
         />

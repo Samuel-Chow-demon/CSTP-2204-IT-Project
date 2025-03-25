@@ -1,14 +1,14 @@
-import { createContext, useState } from "react";
-import { locationResCollectionRef } from "../database/database.js";
-import {getCollectionDocByRefAndID} from "../database/database.js"
-import { deleteDoc, addDoc, doc, getDoc, getDocs, setDoc, limit, updateDoc, onSnapshot, query, where, writeBatch, arrayUnion } from "firebase/firestore";
+import { createContext, useContext, useEffect, useState } from "react";
+import { userCollectionRef, streamResCollectionRef, locationResCollectionRef } from "../database/database.js";
+import {getCollectionDocByRefAndID, getCollectionDocsByMultipleRefAndID} from "../utilities/DBUtility.js"
+import { deleteDoc, addDoc, doc, getDoc, getDocs, setDoc, limit, updateDoc, onSnapshot, query, where, writeBatch, arrayUnion, arrayRemove } from "firebase/firestore";
 import {db} from '../firebase.js'
 import {ALERT_SUCCESS_COLOR, ALERT_ERROR_COLOR} from '../components/constant.js'
 
 
 const locationContext = createContext();
 
-const useLocationDB = useContext(locationContext);
+const useLocationDB = () => useContext(locationContext);
 
 const LocationContextProvider = ({children, currentUser})=>{
 
@@ -18,7 +18,7 @@ const LocationContextProvider = ({children, currentUser})=>{
     const [locationDBInfo, setLocationDBInfo] = useState({
         name : "",
         address : "",
-        parkingSiteJSONInfo : "",
+        parkingSiteInfoJSON : "",
         notifications : [],
         streamResID : [],
         ownerUID : "",
@@ -29,7 +29,7 @@ const LocationContextProvider = ({children, currentUser})=>{
     const [isDBLoading, setDBIsLoading] = useState(true)
 
     const triggerRefreshLocationDB = ()=>{
-        setStreamDBUpdate(!isStreamDBUpdate)
+        setLocationDBUpdate(!isLocationDBUpdate)
     }
 
     useEffect(()=>{
@@ -54,7 +54,7 @@ const LocationContextProvider = ({children, currentUser})=>{
                         unsubscribeLocationDB();
                     }
 
-                    unsubscribeStreamDB = onSnapshot(
+                    unsubscribeLocationDB = onSnapshot(
                         query(locationResCollectionRef, where('ownerUID', "==", currentUser.uid)),
                         (snapshot)=>{
 
@@ -77,8 +77,8 @@ const LocationContextProvider = ({children, currentUser})=>{
                                 color: ALERT_ERROR_COLOR,
                                 isOpen: true,
                                 hideDuration: 2000,
-                                toggle: !alertStream.toggle,
-                                handleCLose: ()=>{setAlertStream({isOpen: false, message:""})}
+                                toggle: !alertLocationDB.toggle,
+                                handleCLose: ()=>{setAlertLocationDB({isOpen: false, message:""})}
                             });
                             setDBIsLoading(false);
                         }
@@ -89,8 +89,8 @@ const LocationContextProvider = ({children, currentUser})=>{
                 {
                     setDBIsLoading(false);
                     console.log("User Not Exist", error);
-                    setAlertLocationDB({...alertLocationDB, message:'User Not Exist', color: ALERT_ERROR_COLOR, isOpen: true, hideDuration: 2000, toggle: !alertStream.toggle,
-                        handleCLose: ()=>{setAlertStream({isOpen: false, message:""})}
+                    setAlertLocationDB({...alertLocationDB, message:'User Not Exist', color: ALERT_ERROR_COLOR, isOpen: true, hideDuration: 2000, toggle: !alertLocationDB.toggle,
+                        handleCLose: ()=>{setAlertLocationDB({isOpen: false, message:""})}
                     });
                 }
             }
@@ -98,8 +98,8 @@ const LocationContextProvider = ({children, currentUser})=>{
             {
                 setDBIsLoading(false);
                 console.log("Get Stream DB Fail", error);
-                setAlertLocationDB({...alertLocationDB, message:'Access Location DB Fail', color: ALERT_ERROR_COLOR, isOpen: true, hideDuration: 2000, toggle: !alertStream.toggle,
-                    handleCLose: ()=>{setAlertStream({isOpen: false, message:""})}
+                setAlertLocationDB({...alertLocationDB, message:'Access Location DB Fail', color: ALERT_ERROR_COLOR, isOpen: true, hideDuration: 2000, toggle: !alertLocationDB.toggle,
+                    handleCLose: ()=>{setAlertLocationDB({isOpen: false, message:""})}
                 });
             }
         }
@@ -127,110 +127,201 @@ const LocationContextProvider = ({children, currentUser})=>{
         try
         {
             const {docRef:userRef, docObj:userDoc, docData:userData} = await getCollectionDocByRefAndID(userCollectionRef, currentUser.uid);
+            const allStreamResDocObj = await getCollectionDocsByMultipleRefAndID(streamResCollectionRef, formData.streamResID);
 
             if (userDoc.exists())
             {
                 const batch = writeBatch(db);
 
                 const newLocationResRef = doc(locationResCollectionRef);
+
+                // Update Location Table
                 batch.set(newLocationResRef, {
                     ...formData,
                     ownerUID : currentUser.uid,
-                    streamResID : []
                 });
 
+                // Update User Table
                 batch.update(userRef, {
                         locationResIDs : arrayUnion(newLocationResRef.id)
                     });
+
+                // Update Stream Res Table
+                if (allStreamResDocObj.length > 0)
+                {
+                    allStreamResDocObj.forEach(Obj =>{
+                        const { docRef, docObj, docData } = Obj
+
+                        if (docObj.exists())
+                        {
+                            batch.update(docRef, {
+                                parkLocationID : newLocationResRef.id
+                            });
+                        }
+                    })
+                }
 
                 await batch.commit();
 
                 triggerRefreshLocationDB();
                 setAlertLocationDB({...alertLocationDB, message:`Success Added New Location Rescource ${formData.name}`, color: ALERT_SUCCESS_COLOR, isOpen: true, hideDuration: 1500,
-                                        toggle: !alertStream.toggle, handleCLose: ()=>{setAlertStream({isOpen: false, message:""})} });
+                                        toggle: !alertLocationDB.toggle, handleCLose: ()=>{setAlertLocationDB({isOpen: false, message:""})} });
             }
         }
         catch(error)
         {
             console.log("Add Location Doc Fail", error);
-            setAlertLocationDB({...alertLocationDB, message:'Add New Location Res Fail', color: ALERT_ERROR_COLOR, isOpen: true, hideDuration: 2000, toggle: !alertStream.toggle,
-                handleCLose: ()=>{setAlertStream({isOpen: false, message:""})}
+            setAlertLocationDB({...alertLocationDB, message:'Add New Location Res Fail', color: ALERT_ERROR_COLOR, isOpen: true, hideDuration: 2000, toggle: !alertLocationDB.toggle,
+                handleCLose: ()=>{setAlertLocationDB({isOpen: false, message:""})}
             });
         }
     }
 
-    const editLocationRes = async({formData, id})=>{
+    const editLocationRes = async({formData, id, prevStreamIDList})=>{
 
         try{
 
             const { docRef: locationRef, docObj: locationDoc, docData: locationData } = await getCollectionDocByRefAndID(locationResCollectionRef, id);
+            const allStreamResDocObj = await getCollectionDocsByMultipleRefAndID(streamResCollectionRef, formData.streamResID);
 
             if (locationDoc.exists())
             {
-                await setDoc(locationRef, formData, {merge: true});
+                const batch = writeBatch(db);
+
+                // Update Location Table
+                batch.set(locationRef, formData, {merge: true});
+
+                //await setDoc(locationRef, formData, {merge: true});
+
+                // Check if remove some stream resources from location such that need to remove
+                // the location id in that stream doc as well
+                if (prevStreamIDList.length > 0)
+                {
+                    const allPrevStreamResDocObj = await getCollectionDocsByMultipleRefAndID(streamResCollectionRef, prevStreamIDList);
+                    allPrevStreamResDocObj.forEach(Obj=>{
+                        const { docRef, docObj, docData } = Obj
+
+                        if (!formData.streamResID.includes(docRef.id))
+                        {
+                            if (docObj.exists())
+                            {
+                                batch.update(docRef, {
+                                    parkLocationID : ""
+                                });
+                            }
+                        }
+                    })
+                }
+
+                // Update Stream Res Table
+                if (allStreamResDocObj.length > 0)
+                {
+                    allStreamResDocObj.forEach(Obj =>{
+                        const { docRef, docObj, docData } = Obj
+
+                        if (docObj.exists())
+                        {
+                            batch.update(docRef, {
+                                parkLocationID : locationRef.id
+                            });
+                        }
+                    })
+                }
+
+                await batch.commit();
 
                 triggerRefreshLocationDB();
                 setAlertLocationDB({...alertLocationDB, message: `Success Modify Location Resource ${locationData.name}`, color: ALERT_SUCCESS_COLOR, isOpen: true, hideDuration: 1500,
-                    toggle: !alertStream.toggle, handleCLose: ()=>{setAlertStream({isOpen: false, message:""})} });
+                    toggle: !alertLocationDB.toggle, handleCLose: ()=>{setAlertLocationDB({isOpen: false, message:""})} });
             }
             else
             {
                 console.log("Location Resource Not Exist", error);
-                setAlertLocationDB({...alertLocationDB, message: 'Location Resource Not Exist', color: ALERT_ERROR_COLOR, isOpen: true, hideDuration: 2000, toggle: !alertStream.toggle,
-                    handleCLose: ()=>{setAlertStream({isOpen: false, message:""})}
+                setAlertLocationDB({...alertLocationDB, message: 'Location Resource Not Exist', color: ALERT_ERROR_COLOR, isOpen: true, hideDuration: 2000, toggle: !alertLocationDB.toggle,
+                    handleCLose: ()=>{setAlertLocationDB({isOpen: false, message:""})}
                 });
             }
         }
         catch(error){
             console.log("Modify Stream Doc Fail", error);
-            setAlertLocationDB({...alertLocationDB, message: 'Modify Location Resource Fail', color: ALERT_ERROR_COLOR, isOpen: true, hideDuration: 2000, toggle: !alertStream.toggle,
-                handleCLose: ()=>{setAlertStream({isOpen: false, message:""})}
+            setAlertLocationDB({...alertLocationDB, message: 'Modify Location Resource Fail', color: ALERT_ERROR_COLOR, isOpen: true, hideDuration: 2000, toggle: !alertLocationDB.toggle,
+                handleCLose: ()=>{setAlertLocationDB({isOpen: false, message:""})}
             });
         }
     }
 
-    const deleteLocationRes = async({id})=>{
+    const deleteLocationRes = async({idList})=>{
 
         try{
 
-            const { docRef: locationRef, docObj: locationDoc, docData: locationData } = await getCollectionDocByRefAndID(locationResCollectionRef, id);
+            // const { docRef: locationRef, docObj: locationDoc, docData: locationData }
+            const docRefObjList = await getCollectionDocsByMultipleRefAndID(locationResCollectionRef, idList);
 
-            if (locationDoc.exists())
+            if (docRefObjList.length > 0)
             {
-                const locationResName = locationData.name;
+                const allLocationResName = docRefObjList.map((Obj)=>Obj.docData.name).join(', ') || '';
 
                 // 2 Steps - Delete Location DB Doc, and Remove the LocationRes ID in the User DB
                 // Not necessary to remove the related StreamRes Doc since the StreamRes Doc should can exist on its own
-                const {docRef:userDocRef} = await getCollectionDocByRefAndID(userCollectionRef, locationData.ownerUID);
+                const {docRef:userDocRef} = await getCollectionDocByRefAndID(userCollectionRef, currentUser.uid);
 
                 const batchStep2 = writeBatch(db);
 
-                // delete location DB Doc
-                batchStep2.delete(locationRef);
-                // remove the id from the user list
-                batchStep2.update(userDocRef, {
-                    locationResIDs : arrayRemove(id)
-                })
+                const allPromises = docRefObjList.map(async(Obj)=>{
+
+                    // Check if doc exist
+                    if (Obj.docObj.exists())
+                    {
+                        // for each selected location, should have own stream Res list
+                        const allStreamResDocObj = await getCollectionDocsByMultipleRefAndID(streamResCollectionRef, Obj.docData.streamResID);
+
+                        // delete each selected location DB Doc
+                        batchStep2.delete(Obj.docRef);
+
+                        // remove the selected location id from the user table
+                        batchStep2.update(userDocRef, {
+                            locationResIDs : arrayRemove(Obj.docObj.id)
+                        })
+
+                        // Update Stream Res Table
+                        if (allStreamResDocObj.length > 0)
+                        {
+                            allStreamResDocObj.forEach((eachObj) =>{
+                                const { docRef, docObj, docData } = eachObj
+        
+                                if (docObj.exists())
+                                {
+                                    batchStep2.update(docRef, {
+                                        parkLocationID : ""
+                                    });
+                                }
+                            })
+                        }
+                    }
+                });
+
+                // wait all promises to finish
+                await Promise.all(allPromises)
 
                 // proceed
                 await batchStep2.commit();
 
                 triggerRefreshLocationDB();
-                setAlertLocationDB({...alertLocationDB, message: `Success Remove Location Resource ${locationResName}`, color: ALERT_SUCCESS_COLOR, isOpen: true, hideDuration: 1500,
-                    toggle: !alertStream.toggle, handleCLose: ()=>{setAlertStream({isOpen: false, message:""})} });
+                setAlertLocationDB({...alertLocationDB, message: `Success Remove Location Resource ${allLocationResName}`, color: ALERT_SUCCESS_COLOR, isOpen: true, hideDuration: 1500,
+                    toggle: !alertLocationDB.toggle, handleCLose: ()=>{setAlertLocationDB({isOpen: false, message:""})} });
             }
             else
             {
                 console.log("Location Resource Not Exist", error);
-                setAlertLocationDB({...alertLocationDB, message: 'Location Resource Not Exist', color: ALERT_ERROR_COLOR, isOpen: true, hideDuration: 2000, toggle: !alertStream.toggle,
-                    handleCLose: ()=>{setAlertStream({isOpen: false, message:""})}
+                setAlertLocationDB({...alertLocationDB, message: 'Location Resource Not Exist', color: ALERT_ERROR_COLOR, isOpen: true, hideDuration: 2000, toggle: !alertLocationDB.toggle,
+                    handleCLose: ()=>{setAlertLocationDB({isOpen: false, message:""})}
                 });
             }
         }
         catch(error){
             console.log("Delete Location Resource Fail", error);
-            setAlertLocationDB({...alertLocationDB, message: 'Delete Location Resource Fail', color: ALERT_ERROR_COLOR, isOpen: true, hideDuration: 2000, toggle: !alertStream.toggle,
-                handleCLose: ()=>{setAlertStream({isOpen: false, message:""})}
+            setAlertLocationDB({...alertLocationDB, message: 'Delete Location Resource Fail', color: ALERT_ERROR_COLOR, isOpen: true, hideDuration: 2000, toggle: !alertLocationDB.toggle,
+                handleCLose: ()=>{setAlertLocationDB({isOpen: false, message:""})}
             });
         }
     }

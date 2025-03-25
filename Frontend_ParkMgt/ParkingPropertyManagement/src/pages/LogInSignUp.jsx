@@ -23,8 +23,10 @@ const LogInSignUp = () => {
   return (
     <>
         <Card className="shadow-lg" style={{
-            minWidth: '450px'
-        }}>
+            minWidth: '450px',
+            transform: "scale(0.8)"
+        }}
+        >
             <Card.Header>
 
                 <Nav justify variant="tabs" defaultActiveKey={LOGIN_KEY} activeKey={activeKey} 

@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { userCollectionRef, streamResCollectionRef } from "../database/database.js";
+import { userCollectionRef, streamResCollectionRef, locationResCollectionRef } from "../database/database.js";
 import {getCollectionDocByRefAndID, getCollectionDocsByMultipleRefAndID} from "../utilities/DBUtility.js"
 import { deleteDoc, addDoc, doc, getDoc, getDocs, setDoc, limit, updateDoc, onSnapshot, query, where, writeBatch, arrayUnion, arrayRemove } from "firebase/firestore";
 import {db} from '../firebase.js'
@@ -208,19 +208,32 @@ const StreamContextProvider = ({children, currentUser})=>{
 
                 const batchStep2 = writeBatch(db);
 
-                docRefObjList.forEach((Obj)=>{
+                const allPromises = docRefObjList.map(async(Obj)=>{
 
                     // Check if doc exist
                     if (Obj.docObj.exists())
                     {
+                        const {docObj: locationDocObj, docRef:locationDocRef} = await getCollectionDocByRefAndID(locationResCollectionRef, Obj.docData.parkLocationID);
+
                         // delete each selected stream DB Doc
                         batchStep2.delete(Obj.docRef);
                         // remove the selected id from the list
                         batchStep2.update(userDocRef, {
                             streamResIDs : arrayRemove(Obj.docObj.id)
                         })
+
+                        // remove the stream id in the location doc
+                        if (locationDocObj.exists())
+                        {
+                            batchStep2.update(locationDocRef, {
+                                streamResID : arrayRemove(Obj.docObj.id)
+                            })
+                        }
                     }
                 });
+
+                // wait all promises to finish
+                await Promise.all(allPromises)
 
                 // proceed
                 await batchStep2.commit();
