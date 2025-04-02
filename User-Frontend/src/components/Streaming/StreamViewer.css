@@ -1,0 +1,22 @@
+.stream-viewer {
+  background: linear-gradient(to right, #9b59b6, #6c217e);
+    min-height: 100vh;
+    padding: 2rem 1rem;
+    font-family: "Roboto", sans-serif;
+    color: #333;
+    text-align: center;
+  }
+  
+  .stream-status {
+    font-size: 0.9rem;
+    color: #6f268b;
+    margin-bottom: 1rem;
+  }
+  
+  .stream-img {
+    width: 100%;
+    max-width: 600px;
+    border-radius: 16px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+  }
+  
