@@ -1,0 +1,153 @@
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Roboto:wght@300;400;700&display=swap');
+
+.home-container {
+  background-color: #f3d9f7; /* soft lavender background */
+  min-height: 100vh;
+  padding: 1.5rem 1rem;
+  font-family: "Roboto", sans-serif;
+  box-sizing: border-box;
+  color: #333;
+}
+
+/* Header Row */
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.2rem;
+  padding: 1rem;
+  background: linear-gradient(to right, #9b59b6, #6c217e);
+  border-radius: 10px;
+}
+
+/* Left: Logo */
+.logo-col {
+  flex: 1;
+}
+
+.logo {
+  width: 60px;
+  height: 60px;
+  border-radius: 10px;
+  object-fit: contain;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Right: Greeting */
+.greeting-col {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.greeting {
+  font-size: 1.8rem;
+  font-weight: normal;
+  font-family: "Pacifico", cursive;
+  color: white;
+}
+
+/* Search Bar */
+.search-bar-row {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  height: 14vh;
+  margin: 2rem 0;
+}
+
+.card-wrapper {
+  background: linear-gradient(to right, #9b59b6, #6c217e);
+  padding: 1.2rem 1rem;
+  border-radius: 18px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+}
+
+/* Parking cards */
+.locations {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.location-card {
+  background: #ffffff;
+  color: #333;
+  padding: 1rem;
+  border-radius: 16px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.location-card:hover {
+  transform: scale(1.01);
+}
+
+.location-title {
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+.location-address {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.streams {
+  margin-top: 1rem;
+  border-top: 1px solid #eee;
+  padding-top: 0.5rem;
+}
+
+.stream-item {
+  font-size: 0.85rem;
+  color: #6c217e;
+  padding: 0.3rem 0;
+}
+
+.parking-info {
+  margin-top: 1rem;
+  border-top: 1px solid #eee;
+  padding-top: 0.8rem;
+  background: #f8f8f8;
+  border-radius: 12px;
+  padding: 0.8rem;
+}
+
+.info-row {
+  font-size: 0.9rem;
+  margin-bottom: 0.4rem;
+  color: #333;
+  display: flex;
+  justify-content: space-between;
+}
+
+.info-label {
+  font-weight: 600;
+  margin-right: 0.5rem;
+}
+
+.info-value {
+  font-style: italic;
+  color: #6f268b;
+}
+
+.location-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.arrow-btn {
+  padding: 0.4rem;
+  background-color: #f3f0f8;
+  border-radius: 50%;
+  transition: background 0.3s ease;
+}
+
+.arrow-btn:hover {
+  background-color: #e0d2f0;
+}
