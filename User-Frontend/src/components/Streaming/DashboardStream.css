@@ -1,0 +1,63 @@
+.dashboard-container {
+    padding: 1.2rem;
+    min-height: 100vh;
+    background: linear-gradient(to right, #4f1068, #6c217e);
+    color: white;
+    font-family: "Roboto", sans-serif;
+  }
+  
+  .dashboard-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .back-btn {
+    background: white;
+    color: #6f268b;
+    border: none;
+    border-radius: 8px;
+    padding: 0.5rem;
+    cursor: pointer;
+  }
+  
+  .dashboard-title {
+    font-size: 1.4rem;
+    font-weight: bold;
+  }
+  
+  .stream-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+  
+  .stream-card {
+    background: white;
+    color: #333;
+    padding: 1rem;
+    border-radius: 14px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .stream-name {
+    margin: 0 0 0.4rem;
+    font-weight: 600;
+  }
+  
+  .stream-btn {
+    margin-top: 0.6rem;
+    background: #6f268b;
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  
+  .stream-btn:hover {
+    background: #4b006b;
+  }
+  
