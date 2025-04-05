@@ -105,25 +105,30 @@ const StreamViewer = () => {
 
   return (
     <div className="stream-viewer">
-      <h2>{locationName} - {streamName}</h2>
-      <p className="stream-status">{status}</p>
+  <div className="stream-header">
+    <h2>{locationName} - {streamName}</h2>
+    <p className="stream-status">{status}</p>
+  </div>
 
-      <div className="stream-controls">
-        <button onClick={handleToggleDetection} className="toggle-btn">
-          {detectionOn ? "Disable Detection" : "Enable Detection"}
-        </button>
-        <div className="parking-info">
-          <p>Total Spots: {totalSpots}</p>
-          <p>Available: {parkingStats.empty}</p>
-          <p>Occupied: {parkingStats.occupied}</p>
-          <p>Rush Level: {rushLevel}%</p>
-        </div>
-      </div>
-
-      <div className="zoom-wrapper">
-        <img ref={videoRef} alt="Live Stream" className="stream-img zoomable" />
+  <div className="stream-info-container">
+    <div className="stream-card">
+      <button onClick={handleToggleDetection} className="toggle-btn">
+        {detectionOn ? "Disable Detection" : "Enable Detection"}
+      </button>
+      <div className="parking-info">
+        <p>Total Spots: {totalSpots}</p>
+        <p>Available: {parkingStats.empty}</p>
+        <p>Occupied: {parkingStats.occupied}</p>
+        <p>Rush Level: {rushLevel}%</p>
       </div>
     </div>
+
+    <div className="zoom-wrapper">
+      <img ref={videoRef} alt="Live Stream" className="stream-img zoomable" />
+    </div>
+  </div>
+</div>
+
   );
 };
 
