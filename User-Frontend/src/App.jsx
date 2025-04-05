@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 
 import { AuthProvider } from "./contexts/AuthContext";
 import { UserProvider } from "./contexts/UserContext";
@@ -25,13 +25,16 @@ function App() {
           <Router>
             <div className="App">
               {!isAuthenticated ? (
-                <LoginSignup onLoginSuccess={handleLoginSuccess} />
+                <Routes>
+                  <Route path="*" element={<LoginSignup onLoginSuccess={handleLoginSuccess} />} />
+                </Routes>
               ) : (
                 <Routes>
                   <Route path="/" element={<HomeScreen />} />
                   <Route path="/search" element={<SearchResults />} />
                   <Route path="/dashboard-stream" element={<DashboardStream />} />
                   <Route path="/stream" element={<StreamViewer />} />
+                  <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
               )}
             </div>
