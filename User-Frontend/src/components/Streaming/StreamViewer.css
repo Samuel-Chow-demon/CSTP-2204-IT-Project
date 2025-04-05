@@ -1,22 +1,127 @@
 .stream-viewer {
+  background-color: #f3d9f7; /* soft lavender */
+  min-height: 100vh;
+  padding: 2rem 1rem;
+  font-family: "Roboto", sans-serif;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+}
+
+.back-btn {
+  background: #6f268b;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem;
+  cursor: pointer;
+  font-weight: 500;
+} 
+
+.stream-header {
   background: linear-gradient(to right, #9b59b6, #6c217e);
-    min-height: 100vh;
-    padding: 2rem 1rem;
-    font-family: "Roboto", sans-serif;
-    color: #333;
-    text-align: center;
-  }
-  
-  .stream-status {
-    font-size: 0.9rem;
-    color: #6f268b;
-    margin-bottom: 1rem;
-  }
-  
-  .stream-img {
-    width: 100%;
-    max-width: 600px;
-    border-radius: 16px;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
-  }
-  
+  padding: 1.2rem 1.5rem;
+  border-radius: 18px;
+  width: 100%;
+  max-width: 700px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  text-align: center;
+
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.stream-header h2 {
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: white;
+  margin: 0;
+}
+
+.stream-status {
+  font-size: 0.95rem;
+  color: #f3d9f7;
+  margin-top: 0.5rem;
+  font-weight: 500;
+}
+
+.stream-info-container {
+  background: linear-gradient(to right, #9b59b6, #6c217e);
+  padding: 1.5rem;
+  border-radius: 18px;
+  width: 100%;
+  max-width: 700px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.stream-card {
+  background: white;
+  border-radius: 16px;
+  padding: 1rem 1.2rem;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Detection toggle */
+.toggle-btn {
+  background: #6f268b;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  font-weight: 600;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  margin-bottom: 0.8rem;
+}
+
+.toggle-btn:hover {
+  background: #4b006b;
+}
+
+.parking-info {
+  font-size: 0.85rem;
+  color: #333;
+  text-align: center;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  line-height: 1.5;
+}
+
+/* Each info item */
+.parking-info p {
+  margin: 0;
+  flex: 1 1 45%;
+  min-width: 120px;
+}
+
+/* Stream image wrapper */
+.zoom-wrapper {
+  overflow: hidden;
+  border-radius: 18px;
+  width: 100%;
+}
+
+.stream-img {
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease;
+}
+
+.stream-img:hover {
+  transform: scale(1.03);
+}

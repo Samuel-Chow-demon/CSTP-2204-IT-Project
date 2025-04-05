@@ -1,12 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useUser } from "../../contexts/UserContext";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import axios from "axios";
 import "./StreamViewer.css";
 
 const StreamViewer = () => {
   const { state } = useLocation();
   const user = useUser();
+  const navigate = useNavigate();
   const { streamId, streamName, locationName } = state || {};
 
   const videoRef = useRef(null);
@@ -105,10 +107,16 @@ const StreamViewer = () => {
 
   return (
     <div className="stream-viewer">
-      <h2>{locationName} - {streamName}</h2>
-      <p className="stream-status">{status}</p>
+      <div className="stream-header">
+      <button className="back-btn" onClick={() => navigate(-1)}>
+          <ArrowBackIcon />
+        </button>
+        <h2>{locationName} - {streamName}</h2>
+        <p className="stream-status">{status}</p>
+      </div>
 
-      <div className="stream-controls">
+    <div className="stream-info-container">
+      <div className="stream-card">
         <button onClick={handleToggleDetection} className="toggle-btn">
           {detectionOn ? "Disable Detection" : "Enable Detection"}
         </button>
@@ -124,6 +132,8 @@ const StreamViewer = () => {
         <img ref={videoRef} alt="Live Stream" className="stream-img zoomable" />
       </div>
     </div>
+</div>
+
   );
 };
 
