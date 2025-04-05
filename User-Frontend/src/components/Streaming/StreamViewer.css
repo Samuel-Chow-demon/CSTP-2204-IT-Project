@@ -10,6 +10,16 @@
   gap: 2rem;
 }
 
+.back-btn {
+  background: #6f268b;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem;
+  cursor: pointer;
+  font-weight: 500;
+} 
+
 .stream-header {
   background: linear-gradient(to right, #9b59b6, #6c217e);
   padding: 1.2rem 1.5rem;
@@ -18,6 +28,10 @@
   max-width: 700px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   text-align: center;
+
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
 }
 
 .stream-header h2 {

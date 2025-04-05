@@ -2,14 +2,17 @@ import React, { useState } from "react";
 import { useUser } from "../../contexts/UserContext";
 import { useParking } from "../../contexts/ParkingContext";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 import logo from "../../assets/JustPark.bmp";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import IconButton from "@mui/material/IconButton";
 import "./HomeScreen.css";
 import SearchBar from "../Search/SearchBar";
 
 const HomeScreen = () => {
   const user = useUser();
+  const { logout } = useAuth();
   const { locationData } = useParking();
   const [expandedLocation, setExpandedLocation] = useState(null);
   const navigate = useNavigate();
@@ -26,6 +29,11 @@ const HomeScreen = () => {
         streamResID: location.streamResID || [],
       },
     });
+  };
+
+  const handleLogout = async () => {
+    await logout();
+    window.location.reload(); // Reset back to login screen
   };
 
   return (
@@ -90,6 +98,11 @@ const HomeScreen = () => {
           ))}
         </div>
       </div>
+
+      {/* Sticky Logout Icon */}
+      <IconButton className="logout-btn" onClick={handleLogout}>
+        <ExitToAppIcon style={{ color: "#fff", fontSize: "2rem" }} />
+      </IconButton>
     </div>
   );
 };
