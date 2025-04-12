@@ -213,8 +213,7 @@ const StreamContextProvider = ({children, currentUser})=>{
                     // Check if doc exist
                     if (Obj.docObj.exists())
                     {
-                        const {docObj: locationDocObj, docRef:locationDocRef} = await getCollectionDocByRefAndID(locationResCollectionRef, Obj.docData.parkLocationID);
-
+                        
                         // delete each selected stream DB Doc
                         batchStep2.delete(Obj.docRef);
                         // remove the selected id from the list
@@ -222,12 +221,17 @@ const StreamContextProvider = ({children, currentUser})=>{
                             streamResIDs : arrayRemove(Obj.docObj.id)
                         })
 
-                        // remove the stream id in the location doc
-                        if (locationDocObj.exists())
+                        if (Obj.docData.parkLocationID)
                         {
-                            batchStep2.update(locationDocRef, {
-                                streamResID : arrayRemove(Obj.docObj.id)
-                            })
+                            const {docObj: locationDocObj, docRef:locationDocRef} = await getCollectionDocByRefAndID(locationResCollectionRef, Obj.docData.parkLocationID);
+    
+                            // remove the stream id in the location doc
+                            if (locationDocObj.exists())
+                            {
+                                batchStep2.update(locationDocRef, {
+                                    streamResID : arrayRemove(Obj.docObj.id)
+                                })
+                            }
                         }
                     }
                 });

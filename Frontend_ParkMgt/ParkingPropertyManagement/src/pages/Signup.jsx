@@ -5,6 +5,7 @@ import checkPasswordRule from '../utilities/passwordRule.js'
 import getErrorCode from '../database/error.js'
 import AlertDisplay from '../utilities/AlertDisplay.jsx'
 import { useUserDB } from '../contexts/userDBContext.jsx'
+import { ALERT_SUCCESS_COLOR } from '../components/constant.js'
 
 const Signup = ({changeToLogInTab}) => {
 
@@ -53,7 +54,7 @@ const Signup = ({changeToLogInTab}) => {
             currentUser && 
             !isLoadingUserDB)
         {
-            if (alertUserDB.color === 'success')
+            if (alertUserDB.color === ALERT_SUCCESS_COLOR)
             {
                 clearAllFieldSet();
                 setMessageObj({msg : "Create User Success", color : "success", needSpinner : false});
