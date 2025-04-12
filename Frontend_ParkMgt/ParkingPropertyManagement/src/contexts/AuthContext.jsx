@@ -155,6 +155,7 @@ const AuthProvider = ({children}) => {
                 {
                     unregisterCurrentUser()
                 }
+
                 setIsLoadingUser(false);
             })
         }
