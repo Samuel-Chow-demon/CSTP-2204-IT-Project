@@ -5,12 +5,13 @@ import {
   signInWithEmailAndPassword,
   updateProfile,
 } from 'firebase/auth';
-import { userApp } from '../../firebase'; // Firebase app instance
+import { userApp } from '../../firebase';
 
 import './LoginSignup.css';
 import emailIcon from '../../assets/email.png';
 import userIcon from '../../assets/user.png';
 import lockIcon from '../../assets/locked-computer.png';
+import logo from '../../assets/JustPark.bmp'; // Logo added
 
 const LoginSignup = ({ onLoginSuccess }) => {
   const [action, setAction] = useState('Sign Up');
@@ -29,7 +30,6 @@ const LoginSignup = ({ onLoginSuccess }) => {
         passwordInput
       );
 
-      // Optionally update display name
       if (auth.currentUser) {
         await updateProfile(auth.currentUser, {
           displayName: nameInput,
@@ -37,7 +37,7 @@ const LoginSignup = ({ onLoginSuccess }) => {
       }
 
       alert('User signed up successfully!');
-      setAction('Login'); // Redirect to login screen
+      setAction('Login');
     } catch (error) {
       setErrorMessage(error.message);
     }
@@ -48,7 +48,7 @@ const LoginSignup = ({ onLoginSuccess }) => {
       await signInWithEmailAndPassword(auth, emailInput, passwordInput);
       alert('User logged in successfully!');
       if (onLoginSuccess) {
-        onLoginSuccess(); // Notify App.jsx
+        onLoginSuccess();
       }
     } catch (error) {
       setErrorMessage(error.message);
@@ -57,6 +57,11 @@ const LoginSignup = ({ onLoginSuccess }) => {
 
   return (
     <div className='container'>
+      {/* JustPark Logo */}
+      <div className='logo-wrapper'>
+        <img src={logo} alt='JustPark Logo' className='login-logo' />
+      </div>
+
       <div className='header'>
         <div className='text'>{action}</div>
         <div className='underline'></div>

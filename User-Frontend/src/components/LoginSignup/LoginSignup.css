@@ -15,7 +15,22 @@ body {
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
 }
 
-/* Heading */
+.logo-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.login-logo {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  border-radius: 12px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Header */
 .header {
   display: flex;
   flex-direction: column;
@@ -123,7 +138,7 @@ body {
   color: #666;
 }
 
-/* Responsive adjustments */
+/* Responsive */
 @media (max-width: 768px) {
   .container {
     width: 90%;

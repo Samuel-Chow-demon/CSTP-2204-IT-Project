@@ -13,6 +13,7 @@ const StreamViewer = () => {
 
   const videoRef = useRef(null);
   const wsRef = useRef(null);
+
   const [status, setStatus] = useState("Connecting...");
   const [detectionOn, setDetectionOn] = useState(false);
   const [parkingStats, setParkingStats] = useState({ occupied: 0, empty: 0 });
@@ -39,34 +40,32 @@ const StreamViewer = () => {
           ws.send("DETECT_OFF");
         };
 
-        ws.onmessage = (event) => {
+        ws.onmessage = async (event) => {
           if (event.data instanceof Blob) {
-            const reader = new FileReader();
-            reader.onload = function () {
-              const arrayBuffer = reader.result;
-              const dataView = new DataView(arrayBuffer);
+            const buffer = await event.data.arrayBuffer();
+            const view = new DataView(buffer);
 
-              const numberOfData = dataView.getUint32(0);
-              let offset = 4;
+            const numberOfData = view.getUint32(0, false);
+            let offset = 4;
 
-              if (numberOfData === 2) {
-                const occupied = dataView.getUint32(offset);
-                const empty = dataView.getUint32(offset + 4);
-                setParkingStats({ occupied, empty });
-                offset += 8;
+            if (numberOfData === 2) {
+              const occupied = view.getUint32(offset, false);
+              const empty = view.getUint32(offset + 4, false);
+              setParkingStats({ occupied, empty });
+              offset += 8;
+            }
+
+            const imageData = buffer.slice(offset);
+            const imageBlob = new Blob([imageData], { type: "image/jpeg" });
+            const imageUrl = URL.createObjectURL(imageBlob);
+
+            if (videoRef.current) {
+              const prevSrc = videoRef.current.src;
+              videoRef.current.src = imageUrl;
+              if (prevSrc) {
+                URL.revokeObjectURL(prevSrc);
               }
-
-              const imageBytes = new Uint8Array(arrayBuffer, offset);
-              const blob = new Blob([imageBytes], { type: "image/jpeg" });
-              const imgUrl = URL.createObjectURL(blob);
-
-              if (videoRef.current) {
-                const oldUrl = videoRef.current.src;
-                videoRef.current.src = imgUrl;
-                if (oldUrl) URL.revokeObjectURL(oldUrl);
-              }
-            };
-            reader.readAsArrayBuffer(event.data);
+            }
           } else {
             try {
               const msg = JSON.parse(event.data);
@@ -74,15 +73,16 @@ const StreamViewer = () => {
                 setStatus(`Error: ${msg.message}`);
               }
             } catch (e) {
-              console.warn("Unknown message:", event.data);
+              console.warn("Unknown non-blob message:", event.data);
             }
           }
         };
 
         ws.onclose = () => setStatus("Connection closed ❌");
         ws.onerror = () => setStatus("Error connecting 🚨");
+
       } catch (err) {
-        console.error(err);
+        console.error("Token fetch failed:", err);
         setStatus("Failed to connect");
       }
     };
@@ -90,7 +90,9 @@ const StreamViewer = () => {
     connectToStream();
 
     return () => {
-      if (wsRef.current) wsRef.current.close();
+      if (wsRef.current) {
+        wsRef.current.close();
+      }
     };
   }, [streamId, user]);
 
@@ -108,32 +110,31 @@ const StreamViewer = () => {
   return (
     <div className="stream-viewer">
       <div className="stream-header">
-      <button className="back-btn" onClick={() => navigate(-1)}>
+        <button className="back-btn" onClick={() => navigate(-1)}>
           <ArrowBackIcon />
         </button>
         <h2>{locationName} - {streamName}</h2>
         <p className="stream-status">{status}</p>
       </div>
 
-    <div className="stream-info-container">
-      <div className="stream-card">
-        <button onClick={handleToggleDetection} className="toggle-btn">
-          {detectionOn ? "Disable Detection" : "Enable Detection"}
-        </button>
-        <div className="parking-info">
-          <p>Total Spots: {totalSpots}</p>
-          <p>Available: {parkingStats.empty}</p>
-          <p>Occupied: {parkingStats.occupied}</p>
-          <p>Rush Level: {rushLevel}%</p>
+      <div className="stream-info-container">
+        <div className="stream-card">
+          <button onClick={handleToggleDetection} className="toggle-btn">
+            {detectionOn ? "Disable Detection" : "Enable Detection"}
+          </button>
+          <div className="parking-info">
+            <p>Total Spots: {totalSpots}</p>
+            <p>Available: {parkingStats.empty}</p>
+            <p>Occupied: {parkingStats.occupied}</p>
+            <p>Rush Level: {rushLevel}%</p>
+          </div>
+        </div>
+
+        <div className="zoom-wrapper">
+          <img ref={videoRef} alt="Live Stream" className="stream-img zoomable" />
         </div>
       </div>
-
-      <div className="zoom-wrapper">
-        <img ref={videoRef} alt="Live Stream" className="stream-img zoomable" />
-      </div>
     </div>
-</div>
-
   );
 };
 
