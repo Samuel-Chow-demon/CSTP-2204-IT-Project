@@ -3,7 +3,7 @@ import { useUser } from "../../contexts/UserContext";
 import { useParking } from "../../contexts/ParkingContext";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
-import logo from "../../assets/JustPark.bmp";
+import logo from "../../assets/Logo.png";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import IconButton from "@mui/material/IconButton";
@@ -44,7 +44,7 @@ const HomeScreen = () => {
           <img src={logo} alt="JustPark Logo" className="logo" />
         </div>
         <div className="greeting-col">
-          <span className="greeting">👋 Hi, {user?.username || "User"}</span>
+          <span className="greeting">Hi, {user?.username || "User"}</span>
         </div>
       </div>
 
