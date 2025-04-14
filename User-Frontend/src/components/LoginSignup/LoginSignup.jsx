@@ -11,7 +11,7 @@ import './LoginSignup.css';
 import emailIcon from '../../assets/email.png';
 import userIcon from '../../assets/user.png';
 import lockIcon from '../../assets/locked-computer.png';
-import logo from '../../assets/JustPark.bmp'; // Logo added
+import logo from '../../assets/Logo.png'; // Logo added
 
 const LoginSignup = ({ onLoginSuccess }) => {
   const [action, setAction] = useState('Sign Up');
