@@ -18,81 +18,93 @@ const StreamViewer = () => {
   const [detectionOn, setDetectionOn] = useState(false);
   const [parkingStats, setParkingStats] = useState({ occupied: 0, empty: 0 });
 
+
+  const connectToStream = async () => {
+    try {
+      const response = await axios.post("http://localhost:8204/request-token", {
+        accID: user.uid,
+        expTime: 60,
+      });
+
+      const token = response.data.token;
+      const ws = new WebSocket(
+        `ws://localhost:8204/ws/${user.uid}/${streamId}/?token=${token}`
+      );
+
+      wsRef.current = ws;
+
+      ws.onopen = () => {
+        setStatus("Connected ✅");
+        ws.send("DETECT_OFF");
+      };
+
+      ws.onmessage = async (event) => {
+        if (event.data instanceof Blob) {
+          const buffer = await event.data.arrayBuffer();
+          const view = new DataView(buffer);
+
+          const numberOfData = view.getUint32(0, false);
+          let offset = 4;
+
+          if (numberOfData === 2) {
+            const occupied = view.getUint32(offset, false);
+            const empty = view.getUint32(offset + 4, false);
+            setParkingStats({ occupied, empty });
+            offset += 8;
+          }
+
+          const imageData = buffer.slice(offset);
+          const imageBlob = new Blob([imageData], { type: "image/jpeg" });
+          const imageUrl = URL.createObjectURL(imageBlob);
+
+          if (videoRef.current) {
+            const prevSrc = videoRef.current.src;
+            videoRef.current.src = imageUrl;
+            if (prevSrc) {
+              URL.revokeObjectURL(prevSrc);
+            }
+          }
+        } else {
+          try {
+            const msg = JSON.parse(event.data);
+            if (msg.type === "error") {
+              setStatus(`Error: ${msg.message}`);
+            }
+          } catch (e) {
+            console.warn("Unknown non-blob message:", event.data);
+          }
+        }
+      };
+
+      ws.onclose = () => setStatus("Connection closed ❌");
+      ws.onerror = () => setStatus("Error connecting 🚨");
+
+    } catch (err) {
+      console.error("Token fetch failed:", err);
+      setStatus("Failed to connect");
+    }
+  };
+
   useEffect(() => {
     if (!user || !streamId) return;
 
-    const connectToStream = async () => {
-      try {
-        const response = await axios.post("http://localhost:8204/request-token", {
-          accID: user.uid,
-          expTime: 60,
-        });
-
-        const token = response.data.token;
-        const ws = new WebSocket(
-          `ws://localhost:8204/ws/${user.uid}/${streamId}/?token=${token}`
-        );
-
-        wsRef.current = ws;
-
-        ws.onopen = () => {
-          setStatus("Connected ✅");
-          ws.send("DETECT_OFF");
-        };
-
-        ws.onmessage = async (event) => {
-          if (event.data instanceof Blob) {
-            const buffer = await event.data.arrayBuffer();
-            const view = new DataView(buffer);
-
-            const numberOfData = view.getUint32(0, false);
-            let offset = 4;
-
-            if (numberOfData === 2) {
-              const occupied = view.getUint32(offset, false);
-              const empty = view.getUint32(offset + 4, false);
-              setParkingStats({ occupied, empty });
-              offset += 8;
-            }
-
-            const imageData = buffer.slice(offset);
-            const imageBlob = new Blob([imageData], { type: "image/jpeg" });
-            const imageUrl = URL.createObjectURL(imageBlob);
-
-            if (videoRef.current) {
-              const prevSrc = videoRef.current.src;
-              videoRef.current.src = imageUrl;
-              if (prevSrc) {
-                URL.revokeObjectURL(prevSrc);
-              }
-            }
-          } else {
-            try {
-              const msg = JSON.parse(event.data);
-              if (msg.type === "error") {
-                setStatus(`Error: ${msg.message}`);
-              }
-            } catch (e) {
-              console.warn("Unknown non-blob message:", event.data);
-            }
-          }
-        };
-
-        ws.onclose = () => setStatus("Connection closed ❌");
-        ws.onerror = () => setStatus("Error connecting 🚨");
-
-      } catch (err) {
-        console.error("Token fetch failed:", err);
-        setStatus("Failed to connect");
-      }
-    };
-
-    connectToStream();
-
     return () => {
-      if (wsRef.current) {
-        wsRef.current.close();
+
+      const ws = wsRef.current;
+
+      if (ws &&
+          ws.readyState == WebSocket.OPEN)
+      {
+        console.log("front end request stop");
+
+        ws.send("CLOSE"); // send to backend for close request
+        ws.close()
+        //setTimeout(()=>ws.close(), 100);
       }
+
+      // if (wsRef.current) {
+      //   wsRef.current.close();
+      // }
     };
   }, [streamId, user]);
 
@@ -103,6 +115,17 @@ const StreamViewer = () => {
       setDetectionOn(!detectionOn);
     }
   };
+
+  const Connect = ()=>{
+
+    if (wsRef.current)
+    {
+        wsRef.current.close();
+        wsRef.current = null;
+    }
+        
+    connectToStream();
+}
 
   const totalSpots = parkingStats.occupied + parkingStats.empty;
   const rushLevel = totalSpots === 0 ? "N/A" : Math.round((parkingStats.occupied / totalSpots) * 100);
@@ -116,6 +139,10 @@ const StreamViewer = () => {
         <h2>{locationName} - {streamName}</h2>
         <p className="stream-status">{status}</p>
       </div>
+
+      <button className="toggle-btn" onClick={Connect}>
+          Connect
+      </button>
 
       <div className="stream-info-container">
         <div className="stream-card">
