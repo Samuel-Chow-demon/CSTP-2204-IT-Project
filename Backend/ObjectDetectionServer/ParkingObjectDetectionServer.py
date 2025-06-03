@@ -31,7 +31,7 @@ class ParkingObjDetection:
     def __init__(self):
 
         self.app = FastAPI()
-        self.detect = ParkingObjectDetection(yolo_model=YOLO_MODEL_KEY.V11_l_18JAN)
+        self.detect = ParkingObjectDetection(yolo_model=YOLO_MODEL_KEY.V12_m_12May) #V11_l_18JAN)
         self.stream_res_collection_db = db.collection(STREAM_RES_COLLECTION_NAME)
 
         #temp setting for using local host to run for both server and client
