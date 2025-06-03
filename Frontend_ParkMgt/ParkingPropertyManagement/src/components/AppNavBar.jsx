@@ -14,7 +14,7 @@ const AppNavBar = () => {
     }
 
     useEffect(()=>{
-        console.log("sidebar", currentUser)
+        //console.log("sidebar", currentUser)
     }, [])
 
   return (
