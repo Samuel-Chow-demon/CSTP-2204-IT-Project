@@ -55,6 +55,8 @@ const DisplayStream = ({ accID, streamResID, expTime }) => {
         SetIsStopped(true)
     }
 
+    let previousURL = null
+
     const receiveMessageHandle = async (event)=>{
 
         //console.log("Raw WebSocket message received:", event.data); 
@@ -95,6 +97,12 @@ const DisplayStream = ({ accID, streamResID, expTime }) => {
 
             if (videoRef.current) {
                 videoRef.current.src = imgUrl;
+
+                if (previousURL)
+                {
+                    URL.revokeObjectURL(previousUrl);
+                    previousURL = imgUrl
+                }
             }
         }
         // if data is string
